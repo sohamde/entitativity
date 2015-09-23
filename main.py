@@ -11,21 +11,13 @@
 # @version: sep-2015
 # ###############################
 
-#import matplotlib
-#matplotlib.use('TkAgg')
-#import matplotlib.pyplot as plt
-#import matplotlib.gridspec as gridspec
 import random as rnd
 rnd.seed()
-#import scipy as scpy
-#import numpy as np
 import sys
-#import plotter
 import agent as ag
 import stats_files as st
 from torus import *
 from two_player_game import *
-import pickle
 from triplet_clustering import empty_ignore
 
 ######################### MAIN ENVIRONMENT PARAMETERS ######################### 
