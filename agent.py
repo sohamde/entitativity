@@ -1,0 +1,230 @@
+# ##########################
+#
+# *** Agent for group conflict model ****
+#	
+# These agents have a collevtivist/individualist trait that determines whether they 
+# see others as individuals or group members. 
+#
+# @author: roos@cs.umd.edu
+# @veraion: aug-2013
+# ##########################
+import random as rnd
+from ordered_dict import *
+
+class EntAgent:
+	"""
+	"""
+
+	def __init__(self, tag, inP, inQ, inI, outP, outQ, outI, gridloc=None):
+		"""
+		@param tag: the group tag of this agent
+		@param gridloc: (x,y) tuple that gives location of this agent on grid
+		@param 
+					- p is the pure strategy if the opponent group cooperated in the last move against me
+					- q is the pure strategy if the opponent group defected in the last move against me
+					- i is the pure strategy to use agisnt unknown
+					- since only pure strategies, p and q are either 0 (cooperate) or 1 (defect)
+		@param i: what to play against unknown group when no history available 0 (cooperate) or 1 (defect)
+		"""
+		self.tag = tag
+		self.CorI = "ent"
+	
+		self.ptr = 0
+		self.gridlocation = gridloc
+
+		self.inP = inP
+		self.inQ = inQ
+		self.inI = inI
+
+		self.outP = outP
+		self.outQ = outQ
+		self.outI = outI
+
+		self.memory = {} # will hold last move of group against agent {tag -> move}
+
+		self.movesThisGen = list()
+
+		self.reset()	 					# sets self.games_played to empty list
+			
+	def move(self, game, neighbors):
+		"""Returns move in game (0 is cooperate, 1 is defect)."""
+
+		opponent = game.opponents[self]
+
+		rnd.shuffle(neighbors)
+		# first see if opponent defected against any neighbors that are my tag
+		for neigh in neighbors:
+			if neigh.tag == self.tag:
+				if opponent.tag in neigh.memory.keys():
+					if neigh.memory[opponent.tag] == 1:
+						if opponent.tag == self.tag:				
+							return self.inQ
+						else:
+							return self.outQ
+
+		if opponent.tag in self.memory.keys():
+			if self.memory[opponent.tag] == 0:
+				if opponent.tag == self.tag:
+					return self.inP
+				else:
+					return self.outP 	
+			else:
+				if opponent.tag == self.tag:
+					return self.inQ
+				else:
+					return self.outQ
+		else:
+			if opponent.tag == self.tag:		
+				return self.inI
+			else:
+				return self.outI
+		
+	def clone(self, tags, mu):
+		newTag = self.tag
+		if rnd.random() < mu:
+			newTag = rnd.choice(tags)
+	
+		newInP = self.inP
+		if rnd.random() < mu:
+			newInP = rnd.randint(0,1)
+
+		newInQ = self.inQ
+		if rnd.random() < mu:
+			newInQ = rnd.randint(0,1)
+
+		if rnd.random() < mu:
+			newInI = rnd.randint(0,1)
+		else:
+			newInI = self.inI
+
+		newOutP = self.outP
+		if rnd.random() < mu:
+			newOutP = rnd.randint(0,1)
+
+		newOutQ = self.outQ
+		if rnd.random() < mu:
+			newOutQ = rnd.randint(0,1)
+
+		if rnd.random() < mu:
+			newOutI = rnd.randint(0,1)
+		else:
+			newOutI = self.outI
+		
+		return EntAgent(newTag, newInP, newInQ, newInI, newOutP, newOutQ, newOutI)	
+
+	def record(self, game):
+		"""Records the game played to history (games_played) and update memory."""
+		#self.games_played.append(game)
+		opp = game.opponents[self]
+		self.memory[opp.tag] = game.get_last_move(opp)
+		self.movesThisGen.append(game.get_last_move(self))
+		#print "self.games_played before recording",self.games_played 
+		self.games_played += 1
+		#print "self.games_played",self.games_played
+		
+	def reset(self):
+		"""Resets history to empty."""
+		self.games_played = 0
+		self.memory = {}
+		self.movesThisGen = list()
+		
+
+class IndAgent:
+	"""
+	"""
+
+	def __init__(self, tag, p, q, i, gridloc=None):
+		"""
+		@param tag: the group tag of this agent
+		@param gridloc: (x,y) tuple that gives location of this agent on grid
+		@param 
+					- p is the pure strategy if the opponent cooperated in the last move against me
+					- q is the pure strategy if the opponent defected in the last move against me
+					- since only pure strategies, p and q are either 0 (cooperate) or 1 (defect)
+		"""
+		self.tag = tag
+		self.CorI = "ind"
+
+		self.ptr = 0
+		self.gridlocation = gridloc
+		
+		self.p = p
+		self.q = q
+		self.i = i
+	
+		self.memory = OrderedDict() # will hold last move of agent elf {agent -> move}
+		self.movesThisGen = list()
+		
+		self.reset()	 					# sets self.games_played to empty list
+			
+	def move(self, game, neighbors):
+		"""Returns move in game (0 is cooperate, 1 is defect)."""
+
+		opponent = game.opponents[self]
+		
+		if opponent in self.memory.keys():
+			#print "agent has seen player"
+			if self.memory[opponent] == 0:
+				#print "his last move against him was 0, i play",self.p				
+				return self.p 	
+			else:
+				#print "his last move against him was 1, i play",self.q				
+				return self.q
+		else:
+			return self.i
+			
+	def clone(self, tags, mu):
+		newTag = self.tag
+		if rnd.random() < mu:
+			newTag = rnd.choice(tags)
+	
+		newP = self.p
+		if rnd.random() < mu:
+			newP = rnd.randint(0,1)
+
+		newQ = self.q
+		if rnd.random() < mu:
+			newQ = rnd.randint(0,1)
+
+		if rnd.random() < mu:
+			newI = rnd.randint(0,1)
+		else:
+			newI = self.i
+		
+		return IndAgent(newTag, newP, newQ, newI)	
+
+	def record(self, game):
+		"""Records the game played to history (games_played) and update memory."""
+		#self.games_played.append(game)
+		opp = game.opponents[self]
+		self.memory[opp] = game.get_last_move(opp)
+		self.movesThisGen.append(game.get_last_move(self))
+
+		if len(self.memory.keys()) > 10:
+			self.memory.popitem()
+
+		#print "self.games_played before recording",self.games_played 
+
+		self.games_played += 1
+		#print "self.games_played",self.games_played
+
+	def reset(self):
+		"""Resets history to empty."""
+		self.games_played = 0
+		self.memory = {}
+		self.movesThisGen = list()
+
+def spawnRandomAgent(tags, onlyEnt = False):
+	""" Creates an agent with random attributes. """
+
+	if onlyEnt:
+		return EntAgent(rnd.choice(tags), rnd.randint(0,1), rnd.randint(0,1),\
+				 rnd.randint(0,1), rnd.randint(0,1), rnd.randint(0,1), rnd.randint(0,1))
+	else:		
+		if rnd.random() < 0.5:
+			return EntAgent(rnd.choice(tags), rnd.randint(0,1), rnd.randint(0,1),\
+				 rnd.randint(0,1), rnd.randint(0,1), rnd.randint(0,1), rnd.randint(0,1))
+		else:
+			return IndAgent(rnd.choice(tags), rnd.randint(0,1), rnd.randint(0,1), rnd.randint(0,1))
+		
+
