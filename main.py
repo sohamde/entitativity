@@ -48,16 +48,16 @@ basePTR = 0.12	        # base potential to reproduce (same as in Hammond and Axe
 cluster = 0     # 1 if running on Deepthought2 cluster, 0 otherwise
 if cluster == 0:
 	results_folder = './results/'
-elif cluster == 1:
+else:
 	results_folder = '/lustre/sohamde/Entitativity/src/results/'
 
 # game to play
 hawkdove = False
 if hawkdove:
-	v = 0.04
+	b = 0.04
 	c = 0.06
-	GAMEMATRIX = [ [ ( v/2.0, v/2.0 ), (0, v) ] , [ (v, 0), ( (v-c)/2.0, (v-c)/2.0 )] ]
-	maxPosPay = v/2.0*numActs
+	GAMEMATRIX = [ [ ( b/2.0, b/2.0 ), (0, b) ] , [ (b, 0), ( (b-c)/2.0, (b-c)/2.0 )] ]
+	maxPosPay = b/2.0*numActs
 	minPosPay = 0
 else:
 	b = 0.03        # benefit of cooperation (same as in Hammond and Axelrod, 2006)
@@ -83,7 +83,7 @@ moveRange = n
 
 # saving run ID
 if hawkdove:
-	runId = "HD_v"+str(v)+"c"+str(c)+"_g"+str(nTags)+"_i"+str(numIts)+"_m"+str(mobility)+"_mr"+str(moveRange)+"_numneighs"+str(len(neighborhood))+"_"
+	runId = "HD_v"+str(b)+"c"+str(c)+"_g"+str(nTags)+"_i"+str(numIts)+"_m"+str(mobility)+"_mr"+str(moveRange)+"_numneighs"+str(len(neighborhood))+"_"
 else:
 	runId = "PD_b"+str(b)+"c"+str(c)+"_g"+str(nTags)+"_i"+str(numIts)+"_m"+str(mobility)+"_mr"+str(moveRange)+"_numneighs"+str(len(neighborhood))+"_"
 if PAIRALLNEIGHS:
@@ -108,21 +108,36 @@ stats = st.Stats(tags, runId, results_folder) # to record statistics, e.g. count
 # ~~~~~ MAIN FUNCTIONS: INIT, DRAW, STEP ~~~~~
 def init():
 	"""
-	Creates and initializes agents and grid.
+	Creates and initializes agents and grid. Empty grid is initialized.
 	"""
-
-	agents = []
+	agents = []     # initialize list of agents
 	grid = Torus(n, n, neighborhood, reproduction_neighborhood)
-	counts = {}
-	for tag in tags:
-		counts[tag] = 0
-
+	counts = stats.getCounts(agents)
 	return agents, grid, counts
+
+
+def init_full_random():
+	"""
+	Creates and initializes agents and grid. The grid is initialized by populating every spot with a random agent.
+	"""
+	agents = []     # initialize list of agents
+	grid = Torus(n, n, neighborhood, reproduction_neighborhood)
+	# populating grid with random agents at every spot
+	emptySites = grid.get_empty_sites()
+	for loc in emptySites:
+		immigrant = ag.spawnRandomAgent(tags, onlyEnt)
+		grid.place_agent(immigrant, loc)
+		agents.append(immigrant)
+		agent_opponents[immigrant] = []
+		no_games[immigrant] = 0.0
+	counts = stats.getCounts(agents)
+	return agents, grid, counts
+
 
 def step(agents, grid, counts):
 	"""
 	Steps through time period stages by Hammond and Axelrod (2006):
-	- immigration, interaction, reproduction, death.
+	- immigration, interaction, reproduction, death, mobility
 	"""
 
 	global agent_opponents, cnt_dead, avg_diff_agents, avg_same, no_games, cnt_len_gt_0, avg_same_gt_1
