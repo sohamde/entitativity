@@ -49,6 +49,12 @@ PAIRALLNEIGHS = True # whether to pair all neighbors or do sampling scheme
 numActs = 4				# number of interactions to strive for (and max limit) if sampling scheme is used
 basePTR = 0.12	# base potential to reproduce
 
+cluster = 0     # 1 if running on Deepthought2 cluster, 0 otherwise
+if cluster == 0:
+	results_folder = './results/'
+elif cluster == 1:
+	results_folder = '/lustre/sohamde/Entitativity/src/results/'
+
 # game to play
 hawkdove = False 
 if hawkdove:
