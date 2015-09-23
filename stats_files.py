@@ -11,7 +11,7 @@ import pickle as pkl
 
 class Stats:
 
-	def __init__(self, tags, runID="x"):
+	def __init__(self, tags, runID="x", results_folder='./results/'):
 
 		self.tags = tags
 
@@ -26,9 +26,9 @@ class Stats:
 		avgInP_curr = avgInQ_curr = avgInI_curr = 0	# collectivist's in-group pqi averages
 		avgOutP_curr = avgOutQ_curr = avgOutI_curr = 0 # collectivist's out-group pqi averages
 
-		self.resultFile = open("/lustre/sohamde/Entitativity/src/results/results_"+str(runID)+".txt",'wb')
+		self.resultFile = open(results_folder+"results_"+str(runID)+".txt",'wb')
 		self.resultFile.write("inGrpDefPerc,outGrpDefPerc,coopProp,outGrpIntProp,collProp,indProp,avgP,avgQ,avgI,avgInP,avgInQ,avgInI,avgOutP,avgOutQ,avgOutI\n")		
-		self.tagCountFile = open("/lustre/sohamde/Entitativity/src/results/tagCounts_"+str(runID)+".txt",'wb')
+		self.tagCountFile = open(results_folder+"tagCounts_"+str(runID)+".txt",'wb')
 		for tag in tags:
 			if tag == tags[-1]:
 				self.tagCountFile.write(str(tag)+"\n")
@@ -37,21 +37,21 @@ class Stats:
 
 		self.stratTypes = ["00","01","10","11"]
 
-		self.indivStratCountFile = open("/lustre/sohamde/Entitativity/src/results/indivStratCounts_"+str(runID)+".txt",'wb')
+		self.indivStratCountFile = open(results_folder+"indivStratCounts_"+str(runID)+".txt",'wb')
 		for strat in self.stratTypes:
 			if strat == self.stratTypes[-1]:
 				self.indivStratCountFile.write(strat+"\n")
 			else:
 				self.indivStratCountFile.write(strat+",")
 
-		self.inStratCountFile = open("/lustre/sohamde/Entitativity/src/results/inStratCounts_"+str(runID)+".txt",'wb')
+		self.inStratCountFile = open(results_folder+"inStratCounts_"+str(runID)+".txt",'wb')
 		for strat in self.stratTypes:
 			if strat == self.stratTypes[-1]:
 				self.inStratCountFile.write(strat+"\n")
 			else:
 				self.inStratCountFile.write(strat+",")
 
-		self.outStratCountFile = open("/lustre/sohamde/Entitativity/src/results/outStratCounts_"+str(runID)+".txt",'wb')
+		self.outStratCountFile = open(results_folder+"outStratCounts_"+str(runID)+".txt",'wb')
 		for strat in self.stratTypes:
 			if strat == self.stratTypes[-1]:
 				self.outStratCountFile.write(strat+"\n")
