@@ -4,7 +4,7 @@
 # *** Group-Entitativity vs Individual-Entitativity simulator. ***
 #
 # USAGE:	
-# - either use main() to run simulation
+# - use main() to run simulation
 # - or pass init(), draw(), and step() to the pycx simulator GUI and run the simulation in GUI
 #
 # @author: Soham De, Patrick Roos
@@ -25,6 +25,8 @@ from triplet_clustering import empty_ignore
 nTags = 4				# number of tags in environment
 tags = xrange(nTags)    # list of tags (1,2,..., nTags-1)
 n = 50      # grid is nxn
+maxTime = 30000 # end after maxTime timesteps
+numIts = 1		# number of game iterations to play in each pairing
 
 # agent can interact and reproduce into only the top, left, right and bottom spots on the grid
 reproduction_neighborhood = [(-1,0), (0,-1), (0,+1), (+1,0)]
@@ -39,10 +41,9 @@ avg_same = 0.0  # average number of games an agent plays with the same agent
 avg_same_gt_1 = 0.0  # considering only agents which have played at least one game
 no_games = {}  # number of games each agent plays
 
-#neighborhood = [(-1,-1),(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1)]
-PAIRALLNEIGHS = True # whether to pair all neighbors or do sampling scheme
+PAIRALLNEIGHS = True    # whether to pair all neighbors or do sampling scheme
 numActs = 4				# number of interactions to strive for (and max limit) if sampling scheme is used
-basePTR = 0.12	# base potential to reproduce
+basePTR = 0.12	        # base potential to reproduce (same as in Hammond and Axelrod, 2006)
 
 cluster = 0     # 1 if running on Deepthought2 cluster, 0 otherwise
 if cluster == 0:
@@ -51,7 +52,7 @@ elif cluster == 1:
 	results_folder = '/lustre/sohamde/Entitativity/src/results/'
 
 # game to play
-hawkdove = False 
+hawkdove = False
 if hawkdove:
 	v = 0.04
 	c = 0.06
@@ -59,59 +60,47 @@ if hawkdove:
 	maxPosPay = v/2.0*numActs
 	minPosPay = 0
 else:
-	b = 0.03	# benefit of cooperation
-	c = 0.01	# cost of cooperation
+	b = 0.03        # benefit of cooperation (same as in Hammond and Axelrod, 2006)
+	c = 0.01        # cost of cooperation (same as in Hammond and Axelrod, 2006)
 	GAMEMATRIX = [ [(b-c,b-c),(-c,b)] , [(b,-c),(0,0)] ]
+	maxPosPay = basePTR+b*numActs*2     # highest possible payoff
+	minPosPay = basePTR-c*numActs*2     # lowest possible payoff
 
-	maxPosPay = basePTR+b*numActs*2
-	minPosPay = basePTR-c*numActs*2
+# probability of an agent moving to a random empty spot in the grid
+mobility = float(sys.argv[2])
 
-#mobility = 0.1  # determines the probability of each agent not to switch to random empty site
-mobility = float(sys.argv[2]) # second command line argument, for running it with mobility 0, 0.1, 0.5, 1
+imRate = 1		    # immigration rate - how many immigrants to add each step (same as in Hammond and Axelrod, 2006)
+mu = 0.05		    # mutation rate (same as in Hammond and Axelrod, 2006)
+deathrate = 0.10    # probability of death (same as in Hammond and Axelrod, 2006)
 
-imRate = 1		# immigration rate - how many immigrants to add each step
-mu = 0.005		# mutaton rate
-deathrate =0.10 # probability of death
-maxTime = 30000 # end after maxTime timesteps (except if in GUI mode)
-numIts = 1		# number of game iterations to play in each pairing
-
-onlyEnt = False# whether to only use entitative agents
-keepGroupsEqual = False# whether to set a max limit on group size at equal percentage of population
-maxGroupSize = n*n/nTags
-
-fullEnt = False # whether to have entitative agents be fully so (harm on neighbor is hram on self)
-
+onlyEnt = False     # whether to only use group-entitative agents
+keepGroupsEqual = False     # whether to set a max limit on group size at equal percentage of population
+maxGroupSize = n*n/nTags    # only relevant if keepGroupsEqual is set to True
+fullEnt = False             # whether to have group-entitative agents be fully so (harm on neighbor is harm on self)
 normPtr = False
-
 moveTowardOwn = False
 moveRange = n 
 
+# saving run ID
 if hawkdove:
 	runId = "HD_v"+str(v)+"c"+str(c)+"_g"+str(nTags)+"_i"+str(numIts)+"_m"+str(mobility)+"_mr"+str(moveRange)+"_numneighs"+str(len(neighborhood))+"_"
 else:
 	runId = "PD_b"+str(b)+"c"+str(c)+"_g"+str(nTags)+"_i"+str(numIts)+"_m"+str(mobility)+"_mr"+str(moveRange)+"_numneighs"+str(len(neighborhood))+"_"
-
 if PAIRALLNEIGHS:
 	runId+="pairallneighs_"
 else:
-	runId+="samplePair"+str(numActs)+"_"
-
+	runId += "samplePair"+str(numActs)+"_"
 if onlyEnt:
-	runId+="onlyEnt_"
-
+	runId += "onlyEnt_"
 if keepGroupsEqual:
-	runId+="keepGroupsEq"+str(maxGroupSize)+"_"
-
+	runId += "keepGroupsEq"+str(maxGroupSize)+"_"
 if fullEnt:
-	runId= runId+"fullEnt_"
-
+	runId += "fullEnt_"
 if normPtr:
-	runId = runId +"normPtr_"
-
+	runId += "normPtr_"
 if moveTowardOwn:
-	runId = runId + "moveTowardOwn_"
-
-runId= runId+str(sys.argv[1])
+	runId += "moveTowardOwn_"
+runId += str(sys.argv[1])
 
 stats = st.Stats(tags, runId, results_folder) # to record statistics, e.g. counts over time
 
