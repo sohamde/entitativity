@@ -20,12 +20,15 @@ from torus import *
 from two_player_game import *
 from triplet_clustering import empty_ignore
 
+
 ######################### MAIN ENVIRONMENT PARAMETERS ######################### 
 nTags = 4				# number of tags in environment
-tags = xrange(nTags)	# list of tags (1,2,..., nTags-1)
-n = 50 # grid is nxn
-reproductionneighborhood = [(-1,0),	(0,-1), (0,+1),(+1,0)]	
-neighborhood = [(-1,0),	(0,-1), (0,+1),(+1,0)]	
+tags = xrange(nTags)    # list of tags (1,2,..., nTags-1)
+n = 50      # grid is nxn
+
+# agent can interact and reproduce into only the top, left, right and bottom spots on the grid
+reproduction_neighborhood = [(-1,0), (0,-1), (0,+1), (+1,0)]
+neighborhood = [(-1,0),	(0,-1), (0,+1), (+1,0)]
 
 # to calculate average number of different agents an agent meets during it's lifetime
 cnt_dead = 0.0  # count of the number of agents that have died
@@ -120,7 +123,7 @@ def init():
 	"""
 
 	agents = []
-	grid = Torus(n, n, neighborhood, reproductionneighborhood)
+	grid = Torus(n, n, neighborhood, reproduction_neighborhood)
 	counts = {}
 	for tag in tags:
 		counts[tag] = 0
