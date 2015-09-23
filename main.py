@@ -364,7 +364,7 @@ def main():
 		while time < maxTime:
 			agents, grid, counts = step(agents, grid, counts)
 			if time%10 == 0:
-				print "time:",time,", avg_diff:",avg_diff_agents,", avg_same:",avg_same,", avg_same_gt1:",avg_same_gt_1
+				print "time:", time
 			time += 1
 	finally:
 		stats.close_files()
