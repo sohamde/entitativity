@@ -1,15 +1,14 @@
 # ###############################
 # main.py
 #
-# *** Entitativity vs Individualist simulator. ***
+# *** Group-Entitativity vs Individual-Entitativity simulator. ***
 #
-# 
 # USAGE:	
 # - either use main() to run simulation
 # - or pass init(), draw(), and step() to the pycx simulator GUI and run the simulation in GUI
 #
-# @author: roos@cs.umd.edu
-# @version: nov-2014
+# @author: Soham De, Patrick Roos
+# @version: sep-2015
 # ###############################
 
 #import matplotlib
