@@ -83,7 +83,7 @@ moveRange = n
 
 # specify grid initialization; 0: empty, 1: filled random agents, 2: group ent, C with in-group, D with out-group
 # 3: group ent, C with in-group and TFT with out-group, 4: individual-entitative, TFT
-grid_initialization = 4     # Hammond and Axelrod initialized with empty grid, ie grid_initialization = 0
+grid_initialization = 0     # Hammond and Axelrod initialized with empty grid, ie grid_initialization = 0
 
 # saving run ID
 if hawkdove:
@@ -167,7 +167,6 @@ def step(agents, grid, counts):
 
 	if PAIRALLNEIGHS == True:
 		pairs = grid.get_all_neigh_agent_pairs()
-		#print "pairs:",pairs
 		for agent1, agent2 in pairs:
 			game = TwoPlayerGame(agent1, agent2, grid.get_neighbors(agent1), grid.get_neighbors(agent2), GAMEMATRIX)
 			game.run(fullEnt,numIts)
@@ -196,11 +195,10 @@ def step(agents, grid, counts):
 				outCoops += coops2
 				outDefects += defects2
 
-
 	else:
 		numInteractions = 0
 		for agent in agents:
-			# pick nieghbor
+			# pick neighbor
 			neighbors = grid.get_neighbors(agent)
 			elligibleneighbors = [n for n in neighbors if n.games_played < numActs]
 			while agent.games_played < numActs and elligibleneighbors:
@@ -237,10 +235,7 @@ def step(agents, grid, counts):
 			elligibleneighbors = [n for n in elligibleneighbors if n.games_played < numActs]
 
 	for a in agents:
-		#print "neighbors:",len(grid.get_neighbors(a))
-		#print "played:",a.games_played
 		a.games_played = 0
-		#print "ptr:",a.ptr
 
 	##### reproduction
 	rnd.shuffle(agents)
@@ -250,8 +245,6 @@ def step(agents, grid, counts):
 		# give agent chance (ptr) to clone into a random open adjacent spot, if it exists
 		emptyAdjacent = [loc for loc in grid.reproductionneighborLocs[agent.gridlocation] if grid.agentMatrix[loc[0]][loc[1]] == None]
 		if emptyAdjacent:
-			#print "agent ptr: ",agent.ptr
-			#print "agent norm ptr: ", normalizePtr(agent.ptr,minPosPay,maxPosPay)
 			if rnd.random() < normalizePtr(agent.ptr,minPosPay,maxPosPay):
 				if keepGroupsEqual:
 					if counts[agent.tag] < maxGroupSize:
@@ -308,7 +301,6 @@ def step(agents, grid, counts):
 					for location in locations:
 						neighsOfEmptySite = grid.get_neighbors_of_loc(location)
 						if neighsOfEmptySite:
-							#print "neighsOfEmptySite:",neighsOfEmptySite
 							numSameTag = 0
 							for neigh in neighsOfEmptySite:
 								if neigh.tag == agent.tag:
