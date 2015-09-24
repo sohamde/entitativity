@@ -10,6 +10,8 @@
 # ##########################
 import random as rnd
 from ordered_dict import *
+import sys
+
 
 class EntAgent:
 	"""
@@ -214,6 +216,7 @@ class IndAgent:
 		self.memory = {}
 		self.movesThisGen = list()
 
+
 def spawnRandomAgent(tags, onlyEnt = False):
 	""" Creates an agent with random attributes. """
 
@@ -226,5 +229,22 @@ def spawnRandomAgent(tags, onlyEnt = False):
 				 rnd.randint(0,1), rnd.randint(0,1), rnd.randint(0,1), rnd.randint(0,1))
 		else:
 			return IndAgent(rnd.choice(tags), rnd.randint(0,1), rnd.randint(0,1), rnd.randint(0,1))
-		
 
+
+def spawnGroupEntAgent(tag, onlyEnt = False):
+	""" Creates a group-entitative agent of a specific tag, playing C for in-group and D for out-group agents"""
+	return EntAgent(rnd.choice(tag), 0, 0, 0, 1, 1, 1)
+
+
+def spawnGroupTFTAgent(tag, onlyEnt = False):
+	""" Creates an group-entitative agent of specific tag and playing C with in-group and TFT with out-group. """
+	return EntAgent(tag, 0, 0, 0, 0, 1, 1)
+
+
+def spawnIndTFTAgent(tag, onlyEnt = False):
+	""" Creates an individual-entitative agent of specific tag and playing TFT. """
+	if onlyEnt:
+		print "spawnIndEntAgent not possible with onlyEnt set to True"
+		sys.exit(0)
+	else:
+		return IndAgent(tag, 0, 1, 0)
