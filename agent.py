@@ -233,7 +233,7 @@ def spawnRandomAgent(tags, onlyEnt = False):
 
 def spawnGroupEntAgent(tag, onlyEnt = False):
 	""" Creates a group-entitative agent of a specific tag, playing C for in-group and D for out-group agents"""
-	return EntAgent(rnd.choice(tag), 0, 0, 0, 1, 1, 1)
+	return EntAgent(tag, 0, 0, 0, 1, 1, 1)
 
 
 def spawnGroupTFTAgent(tag, onlyEnt = False):

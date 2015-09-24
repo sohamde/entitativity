@@ -79,7 +79,11 @@ maxGroupSize = n*n/nTags    # only relevant if keepGroupsEqual is set to True
 fullEnt = False             # whether to have group-entitative agents be fully so (harm on neighbor is harm on self)
 normPtr = False
 moveTowardOwn = False
-moveRange = n 
+moveRange = n
+
+# specify grid initialization; 0: empty, 1: filled random agents, 2: group ent, C with in-group, D with out-group
+# 3: group ent, C with in-group and TFT with out-group, 4: individual-entitative, TFT
+grid_initialization = 4     # Hammond and Axelrod initialized with empty grid, ie grid_initialization = 0
 
 # saving run ID
 if hawkdove:
@@ -106,26 +110,30 @@ stats = st.Stats(tags, runId, results_folder) # to record statistics, e.g. count
 
 
 # ~~~~~ MAIN FUNCTIONS: INIT, DRAW, STEP ~~~~~
-def init():
+def init(opt):
 	"""
 	Creates and initializes agents and grid. Empty grid is initialized.
 	"""
 	agents = []     # initialize list of agents
 	grid = Torus(n, n, neighborhood, reproduction_neighborhood)
 	counts = stats.getCounts(agents)
-	return agents, grid, counts
-
-
-def init_full_random():
-	"""
-	Creates and initializes agents and grid. The grid is initialized by populating every spot with a random agent.
-	"""
-	agents = []     # initialize list of agents
-	grid = Torus(n, n, neighborhood, reproduction_neighborhood)
+	if opt == 0:
+		return agents, grid, counts
 	# populating grid with random agents at every spot
-	emptySites = grid.get_empty_sites()
+	emptySites = list(grid.get_empty_sites())
+	tag = rnd.choice(tags)
 	for loc in emptySites:
-		immigrant = ag.spawnRandomAgent(tags, onlyEnt)
+		if opt == 1:    # random agent on each node of the grid
+			immigrant = ag.spawnRandomAgent(tags, onlyEnt)
+		elif opt == 2:  # group-entitative agent on each node of the grid, playing C with in-group and D with out-group
+			immigrant = ag.spawnGroupEntAgent(tag, onlyEnt)
+		elif opt == 3:  # group-entitative agent on each node of the grid, playing C with in-group and TFT with out-group
+			immigrant = ag.spawnGroupTFTAgent(tag, onlyEnt)
+		elif opt == 4:  # individual-entitative agent on each node of the grid, playing TFT
+			immigrant = ag.spawnIndTFTAgent(tag, onlyEnt)
+		else:
+			print("invalid opt option")
+			sys.exit(0)
 		grid.place_agent(immigrant, loc)
 		agents.append(immigrant)
 		agent_opponents[immigrant] = []
@@ -143,7 +151,7 @@ def step(agents, grid, counts):
 	global agent_opponents, cnt_dead, avg_diff_agents, avg_same, no_games, cnt_len_gt_0, avg_same_gt_1
 
 	##### immigration --- place immigrants with random traits on random site.
-	emptySites = grid.get_empty_sites()
+	emptySites = list(grid.get_empty_sites())
 	randEmptySitesToPopulate = rnd.sample(emptySites,min(imRate,len(emptySites)))
 	for loc in randEmptySitesToPopulate:
 		immigrant = ag.spawnRandomAgent(tags, onlyEnt)
@@ -362,9 +370,8 @@ def main():
 
 	try:
 		time = 0
-		agents, grid, counts = init()
+		agents, grid, counts = init(grid_initialization)
 		print "initialized."
-		print "time:",time
 		while time < maxTime:
 			agents, grid, counts = step(agents, grid, counts)
 			if time%10 == 0:
