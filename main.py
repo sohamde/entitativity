@@ -11,7 +11,6 @@
 # @version: sep-2015
 # ###############################
 
-rnd.seed()
 from two_player_game import *
 from triplet_clustering import empty_ignore
 from phases import *
