@@ -8,7 +8,29 @@
 
 import random, math
 from itertools import izip
+import globals as g
 # from collections import defaultdict
+
+
+# ~~~~~ HELPER FUNCTIONS ~~~~~
+def normalizePtr(ptr,minPosPay,maxPosPay):
+	# Normalizes ptr so that the possible range is [0,1].
+
+	if g.normPtr:
+		return (float(ptr) - minPosPay)/float((maxPosPay - minPosPay))
+	else:
+		return ptr
+
+
+def resetPTR(agents):
+	for agent in agents:
+		agent.ptr = g.basePTR
+
+
+def setTagMatrix(population,M):
+	for agent in population:
+		(x,y) = agent.gridlocation
+		M[x][y] = agent.tag
 
 
 def scaleToFitness(unscaledList, w=0.5):
@@ -150,7 +172,7 @@ def countTags(players):
 		if player.tag in tag_counts.keys():
 			tag_counts[ player.tag ] += 1
 		else:
-			tag_count[player.tag] = 1
+			tag_counts[player.tag] = 1
 	return tag_counts
 
 ##### FUNCTIONS FOR LOTTERIES  ######
@@ -236,7 +258,7 @@ def countAgentTypes(population):
 		if agent.type in typeCounts.keys():
 			typeCounts[ agent.type ] += 1
 		else:
-			typeCount[agent.type] = 1
+			typeCounts[agent.type] = 1
 		
 	return typeCounts
 

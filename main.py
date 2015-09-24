@@ -11,7 +11,6 @@
 # @version: sep-2015
 # ###############################
 
-from two_player_game import *
 from triplet_clustering import empty_ignore
 from phases import *
 
@@ -26,123 +25,11 @@ def step(agents, grid, counts):
 
 	agents, grid = immigration(agents, grid)
 
-	##### interaction
-	totalOutgroupInteractions = inCoops = inDefects = outCoops = outDefects = 0
-	resetPTR(agents) # reset PTR of all agents to basePTR
+	agents, grid, pairs, numInteractions, inCoops, inDefects, outCoops, outDefects, totalOutgroupInteractions = interaction(agents, grid)
 
-	if g.PAIRALLNEIGHS == True:
-		pairs = grid.get_all_neigh_agent_pairs()
-		for agent1, agent2 in pairs:
-			game = TwoPlayerGame(agent1, agent2, grid.get_neighbors(agent1), grid.get_neighbors(agent2), g.GAMEMATRIX)
-			game.run(g.fullEnt,g.numIts)
-			# update potential to reproduce
-			agent1.ptr += game.get_payoffs()[agent1]
-			agent2.ptr += game.get_payoffs()[agent2]
+	agents, grid, counts = reproduction(agents, grid, counts)
 
-			# update dictionary keeping track of unique opponents of each agent
-			if agent2 not in g.agent_opponents[agent1]:
-				g.agent_opponents[agent1].append(agent2)
-				g.agent_opponents[agent2].append(agent1)
-			g.no_games[agent1] += 1.0
-			g.no_games[agent2] += 1.0
-
-			coops, defects = game.get_coops_defects(agent1)
-			coops2, defects2 = game.get_coops_defects(agent2)
-			if agent1.tag == agent2.tag:
-				totalOutgroupInteractions += 1
-				inCoops += coops
-				inDefects += defects
-				inCoops += coops2
-				inDefects += defects2
-			else:
-				outCoops += coops
-				outDefects += defects
-				outCoops += coops2
-				outDefects += defects2
-
-	else:
-		numInteractions = 0
-		for agent in agents:
-			# pick neighbor
-			neighbors = grid.get_neighbors(agent)
-			elligibleneighbors = [n for n in neighbors if n.games_played < g.numActs]
-			while agent.games_played < g.numActs and elligibleneighbors:
-				neighbor = rnd.choice(elligibleneighbors)
-				#print "playing"
-				game = TwoPlayerGame(agent, neighbor, grid.get_neighbors(agent),grid.get_neighbors(neighbor),g.GAMEMATRIX)
-				game.run(g.fullEnt,g.numIts)
-				numInteractions+=1
-				# update potential to reproduce
-				agent.ptr += game.get_payoffs()[agent]
-				neighbor.ptr += game.get_payoffs()[neighbor]
-
-				# update dictionary keeping track of unique opponents of each agent
-				if neighbor not in g.agent_opponents[agent]:
-					g.agent_opponents[agent].append(neighbor)
-					g.agent_opponents[neighbor].append(agent)
-				g.no_games[agent] += 1.0
-				g.no_games[neighbor] += 1.0
-
-				coops, defects = game.get_coops_defects(agent)
-				coops2, defects2 = game.get_coops_defects(neighbor)
-				if agent.tag == neighbor.tag:
-					totalOutgroupInteractions += 1
-					inCoops += coops
-					inDefects += defects
-					inCoops += coops2
-					inDefects += defects2
-				else:
-					outCoops += coops
-					outDefects += defects
-					outCoops += coops2
-					outDefects += defects2
-
-			elligibleneighbors = [n for n in elligibleneighbors if n.games_played < g.numActs]
-
-	for a in agents:
-		a.games_played = 0
-
-	##### reproduction
-	rnd.shuffle(agents)
-
-	agentsAdded = list()
-	for agent in agents:
-		# give agent chance (ptr) to clone into a random open adjacent spot, if it exists
-		emptyAdjacent = [loc for loc in grid.reproductionneighborLocs[agent.gridlocation] if grid.agentMatrix[loc[0]][loc[1]] == None]
-		if emptyAdjacent:
-			if rnd.random() < normalizePtr(agent.ptr,g.minPosPay,g.maxPosPay):
-				if g.keepGroupsEqual:
-					if counts[agent.tag] < g.maxGroupSize:
-						newAgent = agent.clone(g.tags, g.mu)
-						grid.place_agent(newAgent, rnd.choice(emptyAdjacent))
-						agentsAdded.append(newAgent)
-						g.agent_opponents[newAgent] = []
-						g.no_games[newAgent] = 0.0
-				else:
-					newAgent = agent.clone(g.tags, g.mu)
-					grid.place_agent(newAgent, rnd.choice(emptyAdjacent))
-					agentsAdded.append(newAgent)
-					g.agent_opponents[newAgent] = []
-					g.no_games[newAgent] = 0.0
-	agents.extend(agentsAdded)
-
-	##### death
-	for agent in agents:
-		if rnd.random() < g.deathrate:
-			agents.remove(agent)
-			grid.remove_agent(agent) #******
-
-			# updating dictionary and average number of unique opponents each agent plays
-			g.avg_diff_agents = g.avg_diff_agents*(g.cnt_dead/(g.cnt_dead+1.0))+len(g.agent_opponents[agent])/(g.cnt_dead+1.0)
-			if len(g.agent_opponents[agent]) > 0:
-				g.avg_same = g.avg_same*(g.cnt_dead/(g.cnt_dead+1.0)) + (g.no_games[agent]/len(g.agent_opponents[agent]))/(g.cnt_dead+1.0)
-				g.avg_same_gt_1 = g.avg_same_gt_1*(g.cnt_len_gt_0/(g.cnt_len_gt_0+1.0)) + (g.no_games[agent]/len(g.agent_opponents[agent]))/(g.cnt_len_gt_0+1.0)
-				g.cnt_len_gt_0 += 1.0
-			else:
-				g.avg_same = g.avg_same*(g.cnt_dead/(g.cnt_dead+1.0))
-			g.cnt_dead += 1.0
-			del g.agent_opponents[agent]
-			del g.no_games[agent]
+	agents, grid = death(agents, grid)
 
 	##### mobility
 	if g.mobility:
@@ -202,25 +89,6 @@ def step(agents, grid, counts):
 	diff_games_file.write(str(g.avg_diff_agents)+","+str(g.avg_same)+","+str(g.avg_same_gt_1)+"\n")
 
 	return agents, grid, counts
-
-
-# ~~~~~ HELPER FUNCTIONS ~~~~~
-def normalizePtr(ptr,minPosPay,maxPosPay):
-	# Normalizes ptr so that the possible range is [0,1].
-
-	if g.normPtr:
-		return (float(ptr) - minPosPay)/float((maxPosPay - minPosPay))
-	else:
-		return ptr
-
-def resetPTR(agents):
-	for agent in agents:
-		agent.ptr = g.basePTR
-
-def setTagMatrix(population,M):
-	for agent in population:
-		(x,y) = agent.gridlocation
-		M[x][y] = agent.tag
 
 
 ########################################################################################################

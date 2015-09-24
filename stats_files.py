@@ -7,7 +7,6 @@
 # @version: aug-2013
 # ##########################
 
-import pickle as pkl
 
 class Stats:
 

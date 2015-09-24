@@ -8,6 +8,7 @@
 
 from utils import mean, transpose
 
+
 class TwoPlayerGame:
 	 
 	def __init__(self, player1, player2, player1Neighs, player2Neighs, payoffmat):
@@ -68,4 +69,4 @@ class TwoPlayerGame:
 				defects +=1
 		
 		return (coops,defects)
-			
+
