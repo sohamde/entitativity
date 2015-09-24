@@ -42,11 +42,11 @@ def step(agents, grid, counts):
 	counts = g.stats.step(agents, inCoops, inDefects, outCoops, outDefects, totalOutgroupInteractionPerc)
 
 	clustering_coeff = empty_ignore(agents,grid)
-	coeff_file.write(str(clustering_coeff)+"\n")
+	g.coeff_file.write(str(clustering_coeff)+"\n")
 
 	alive_proportion = float((grid.nrows*grid.ncols) - len(grid.emptySites))/float(grid.nrows*grid.ncols)
-	alive_file.write(str(alive_proportion)+"\n")
-	diff_games_file.write(str(g.avg_diff_agents)+","+str(g.avg_same)+","+str(g.avg_same_gt_1)+"\n")
+	g.alive_file.write(str(alive_proportion)+"\n")
+	g.diff_games_file.write(str(g.avg_diff_agents)+","+str(g.avg_same)+","+str(g.avg_same_gt_1)+"\n")
 
 	return agents, grid, counts
 
@@ -65,16 +65,10 @@ def main():
 			time += 1
 	finally:
 		g.stats.close_files()
-		coeff_file.close()
-		alive_file.close()
-		diff_games_file.close()
+		g.coeff_file.close()
+		g.alive_file.close()
+		g.diff_games_file.close()
 
 # run simulation using pyxcsimulator
-coeff_file = open(g.results_folder+"coeff_"+str(g.runId)+".txt",'wb')
-coeff_file.write("clustering_coefficient\n")
-alive_file = open(g.results_folder+"alive_"+str(g.runId)+".txt","wb")
-alive_file.write("alive_proportion\n")
-diff_games_file = open(g.results_folder+"diff_games__"+str(g.runId)+".txt","wb")
-diff_games_file.write("no_unique_games,no_games_same_agent,no_games_same_agent_gt_1\n")
 main()
 
