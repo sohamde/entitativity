@@ -63,7 +63,7 @@ moveRange = n
 
 # specify grid initialization; 0: empty, 1: filled random agents, 2: group ent, C with in-group, D with out-group
 # 3: group ent, C with in-group and TFT with out-group, 4: individual-entitative, TFT
-grid_initialization = 0     # Hammond and Axelrod initialized with empty grid, ie grid_initialization = 0
+grid_initialization = int(sys.argv[3])     # Hammond and Axelrod initialized with empty grid, ie grid_initialization = 0
 
 # saving run ID
 if hawkdove:
