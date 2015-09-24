@@ -52,7 +52,7 @@ def step(agents, grid, counts):
 
 
 ########################################################################################################
-def main():
+if __name__ == "__main__":
 
 	try:
 		time = 0
@@ -69,6 +69,4 @@ def main():
 		g.alive_file.close()
 		g.diff_games_file.close()
 
-# run simulation using pyxcsimulator
-main()
 
