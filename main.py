@@ -19,126 +19,39 @@ import stats_files as st
 from torus import *
 from two_player_game import *
 from triplet_clustering import empty_ignore
+import globals as g
 
 
-######################### MAIN ENVIRONMENT PARAMETERS ######################### 
-nTags = 4				# number of tags in environment
-tags = xrange(nTags)    # list of tags (1,2,..., nTags-1)
-n = 50      # grid is nxn
-maxTime = 30000 # end after maxTime timesteps
-numIts = 1		# number of game iterations to play in each pairing
-
-# agent can interact and reproduce into only the top, left, right and bottom spots on the grid
-reproduction_neighborhood = [(-1,0), (0,-1), (0,+1), (+1,0)]
-neighborhood = [(-1,0),	(0,-1), (0,+1), (+1,0)]
-
-# to calculate average number of different agents an agent meets during it's lifetime
-cnt_dead = 0.0  # count of the number of agents that have died
-cnt_len_gt_0 = 0.0  # count of the number of agents that have died playing at least one game
-avg_diff_agents = 0.0  # average number of different agents each agent meets
-agent_opponents = {}  # for each agent, list of unique agents it has played a game against
-avg_same = 0.0  # average number of games an agent plays with the same agent
-avg_same_gt_1 = 0.0  # considering only agents which have played at least one game
-no_games = {}  # number of games each agent plays
-
-PAIRALLNEIGHS = True    # whether to pair all neighbors or do sampling scheme
-numActs = 4				# number of interactions to strive for (and max limit) if sampling scheme is used
-basePTR = 0.12	        # base potential to reproduce (same as in Hammond and Axelrod, 2006)
-
-cluster = 0     # 1 if running on Deepthought2 cluster, 0 otherwise
-if cluster == 0:
-	results_folder = './results/'
-else:
-	results_folder = '/lustre/sohamde/Entitativity/src/results/'
-
-# game to play
-hawkdove = False
-if hawkdove:
-	b = 0.04
-	c = 0.06
-	GAMEMATRIX = [ [ ( b/2.0, b/2.0 ), (0, b) ] , [ (b, 0), ( (b-c)/2.0, (b-c)/2.0 )] ]
-	maxPosPay = b/2.0*numActs
-	minPosPay = 0
-else:
-	b = 0.03        # benefit of cooperation (same as in Hammond and Axelrod, 2006)
-	c = 0.01        # cost of cooperation (same as in Hammond and Axelrod, 2006)
-	GAMEMATRIX = [ [(b-c,b-c),(-c,b)] , [(b,-c),(0,0)] ]
-	maxPosPay = basePTR+b*numActs*2     # highest possible payoff
-	minPosPay = basePTR-c*numActs*2     # lowest possible payoff
-
-# probability of an agent moving to a random empty spot in the grid
-mobility = float(sys.argv[2])
-
-imRate = 1		    # immigration rate - how many immigrants to add each step (same as in Hammond and Axelrod, 2006)
-mu = 0.05		    # mutation rate (same as in Hammond and Axelrod, 2006)
-deathrate = 0.10    # probability of death (same as in Hammond and Axelrod, 2006)
-
-onlyEnt = False     # whether to only use group-entitative agents
-keepGroupsEqual = False     # whether to set a max limit on group size at equal percentage of population
-maxGroupSize = n*n/nTags    # only relevant if keepGroupsEqual is set to True
-fullEnt = False             # whether to have group-entitative agents be fully so (harm on neighbor is harm on self)
-normPtr = False
-moveTowardOwn = False
-moveRange = n
-
-# specify grid initialization; 0: empty, 1: filled random agents, 2: group ent, C with in-group, D with out-group
-# 3: group ent, C with in-group and TFT with out-group, 4: individual-entitative, TFT
-grid_initialization = 0     # Hammond and Axelrod initialized with empty grid, ie grid_initialization = 0
-
-# saving run ID
-if hawkdove:
-	runId = "HD_v"+str(b)+"c"+str(c)+"_g"+str(nTags)+"_i"+str(numIts)+"_m"+str(mobility)+"_mr"+str(moveRange)+"_numneighs"+str(len(neighborhood))+"_"
-else:
-	runId = "PD_b"+str(b)+"c"+str(c)+"_g"+str(nTags)+"_i"+str(numIts)+"_m"+str(mobility)+"_mr"+str(moveRange)+"_numneighs"+str(len(neighborhood))+"_init"+str(grid_initialization)+"_"
-if PAIRALLNEIGHS:
-	runId+="pairallneighs_"
-else:
-	runId += "samplePair"+str(numActs)+"_"
-if onlyEnt:
-	runId += "onlyEnt_"
-if keepGroupsEqual:
-	runId += "keepGroupsEq"+str(maxGroupSize)+"_"
-if fullEnt:
-	runId += "fullEnt_"
-if normPtr:
-	runId += "normPtr_"
-if moveTowardOwn:
-	runId += "moveTowardOwn_"
-runId += str(sys.argv[1])
-
-stats = st.Stats(tags, runId, results_folder) # to record statistics, e.g. counts over time
-
-
-# ~~~~~ MAIN FUNCTIONS: INIT, DRAW, STEP ~~~~~
+# ~~~~~ MAIN FUNCTIONS: INIT, STEP ~~~~~
 def init(opt):
 	"""
 	Creates and initializes agents and grid. Empty grid is initialized.
 	"""
-	global agent_opponents, no_games
+
 	agents = []     # initialize list of agents
-	grid = Torus(n, n, neighborhood, reproduction_neighborhood)
+	grid = Torus(g.n, g.n, g.neighborhood, g.reproduction_neighborhood)
 	counts = stats.getCounts(agents)
 	if opt == 0:
 		return agents, grid, counts
 	# populating grid with random agents at every spot
 	emptySites = list(grid.get_empty_sites())   # getting empty spots in the grid
-	tag = rnd.choice(tags)          # randomly choosing a specific tag (relevant for opt = 2,3,4
+	tag = rnd.choice(g.tags)          # randomly choosing a specific tag (relevant for opt = 2,3,4
 	for loc in emptySites:
 		if opt == 1:    # random agent on each node of the grid
-			immigrant = ag.spawnRandomAgent(tags, onlyEnt)
+			immigrant = ag.spawnRandomAgent(g.tags, g.onlyEnt)
 		elif opt == 2:  # group-entitative agent on each node of the grid, playing C with in-group and D with out-group
-			immigrant = ag.spawnGroupEntAgent(tag, onlyEnt)
+			immigrant = ag.spawnGroupEntAgent(tag, g.onlyEnt)
 		elif opt == 3:  # group-entitative agent on each node of the grid, playing C with in-group and TFT with out-group
-			immigrant = ag.spawnGroupTFTAgent(tag, onlyEnt)
+			immigrant = ag.spawnGroupTFTAgent(tag, g.onlyEnt)
 		elif opt == 4:  # individual-entitative agent on each node of the grid, playing TFT
-			immigrant = ag.spawnIndTFTAgent(tag, onlyEnt)
+			immigrant = ag.spawnIndTFTAgent(tag, g.onlyEnt)
 		else:
 			print("invalid opt option")
 			sys.exit(0)
 		grid.place_agent(immigrant, loc)    # placing agent on grid location
 		agents.append(immigrant)            # adding new agent to agent list
-		agent_opponents[immigrant] = []     # adding new agent to agent_opponents dictionary
-		no_games[immigrant] = 0.0           # adding new agent to no_games dictionary
+		g.agent_opponents[immigrant] = []     # adding new agent to agent_opponents dictionary
+		g.no_games[immigrant] = 0.0           # adding new agent to no_games dictionary
 	counts = stats.getCounts(agents)        # counting agents of different types and tags
 	return agents, grid, counts
 
@@ -149,37 +62,35 @@ def step(agents, grid, counts):
 	- immigration, interaction, reproduction, death, mobility
 	"""
 
-	global agent_opponents, cnt_dead, avg_diff_agents, avg_same, no_games, cnt_len_gt_0, avg_same_gt_1
-
 	##### immigration --- place immigrants with random traits on random site.
 	emptySites = list(grid.get_empty_sites())
-	randEmptySitesToPopulate = rnd.sample(emptySites,min(imRate,len(emptySites)))
+	randEmptySitesToPopulate = rnd.sample(emptySites,min(g.imRate,len(emptySites)))
 	for loc in randEmptySitesToPopulate:
-		immigrant = ag.spawnRandomAgent(tags, onlyEnt)
+		immigrant = ag.spawnRandomAgent(g.tags, g.onlyEnt)
 		grid.place_agent(immigrant, loc)
 		agents.append(immigrant)
-		agent_opponents[immigrant] = []
-		no_games[immigrant] = 0.0
+		g.agent_opponents[immigrant] = []
+		g.no_games[immigrant] = 0.0
 
 	##### interaction
 	totalOutgroupInteractions = inCoops = inDefects = outCoops = outDefects = 0
 	resetPTR(agents) # reset PTR of all agents to basePTR
 
-	if PAIRALLNEIGHS == True:
+	if g.PAIRALLNEIGHS == True:
 		pairs = grid.get_all_neigh_agent_pairs()
 		for agent1, agent2 in pairs:
-			game = TwoPlayerGame(agent1, agent2, grid.get_neighbors(agent1), grid.get_neighbors(agent2), GAMEMATRIX)
-			game.run(fullEnt,numIts)
+			game = TwoPlayerGame(agent1, agent2, grid.get_neighbors(agent1), grid.get_neighbors(agent2), g.GAMEMATRIX)
+			game.run(g.fullEnt,g.numIts)
 			# update potential to reproduce
 			agent1.ptr += game.get_payoffs()[agent1]
 			agent2.ptr += game.get_payoffs()[agent2]
 
 			# update dictionary keeping track of unique opponents of each agent
-			if agent2 not in agent_opponents[agent1]:
-				agent_opponents[agent1].append(agent2)
-				agent_opponents[agent2].append(agent1)
-			no_games[agent1] += 1.0
-			no_games[agent2] += 1.0
+			if agent2 not in g.agent_opponents[agent1]:
+				g.agent_opponents[agent1].append(agent2)
+				g.agent_opponents[agent2].append(agent1)
+			g.no_games[agent1] += 1.0
+			g.no_games[agent2] += 1.0
 
 			coops, defects = game.get_coops_defects(agent1)
 			coops2, defects2 = game.get_coops_defects(agent2)
@@ -200,23 +111,23 @@ def step(agents, grid, counts):
 		for agent in agents:
 			# pick neighbor
 			neighbors = grid.get_neighbors(agent)
-			elligibleneighbors = [n for n in neighbors if n.games_played < numActs]
-			while agent.games_played < numActs and elligibleneighbors:
+			elligibleneighbors = [n for n in neighbors if n.games_played < g.numActs]
+			while agent.games_played < g.numActs and elligibleneighbors:
 				neighbor = rnd.choice(elligibleneighbors)
 				#print "playing"
-				game = TwoPlayerGame(agent, neighbor, grid.get_neighbors(agent),grid.get_neighbors(neighbor),GAMEMATRIX)
-				game.run(fullEnt,numIts)
+				game = TwoPlayerGame(agent, neighbor, grid.get_neighbors(agent),grid.get_neighbors(neighbor),g.GAMEMATRIX)
+				game.run(g.fullEnt,g.numIts)
 				numInteractions+=1
 				# update potential to reproduce
 				agent.ptr += game.get_payoffs()[agent]
 				neighbor.ptr += game.get_payoffs()[neighbor]
 
 				# update dictionary keeping track of unique opponents of each agent
-				if neighbor not in agent_opponents[agent]:
-					agent_opponents[agent].append(neighbor)
-					agent_opponents[neighbor].append(agent)
-				no_games[agent] += 1.0
-				no_games[neighbor] += 1.0
+				if neighbor not in g.agent_opponents[agent]:
+					g.agent_opponents[agent].append(neighbor)
+					g.agent_opponents[neighbor].append(agent)
+				g.no_games[agent] += 1.0
+				g.no_games[neighbor] += 1.0
 
 				coops, defects = game.get_coops_defects(agent)
 				coops2, defects2 = game.get_coops_defects(neighbor)
@@ -232,7 +143,7 @@ def step(agents, grid, counts):
 					outCoops += coops2
 					outDefects += defects2
 
-			elligibleneighbors = [n for n in elligibleneighbors if n.games_played < numActs]
+			elligibleneighbors = [n for n in elligibleneighbors if n.games_played < g.numActs]
 
 	for a in agents:
 		a.games_played = 0
@@ -245,44 +156,44 @@ def step(agents, grid, counts):
 		# give agent chance (ptr) to clone into a random open adjacent spot, if it exists
 		emptyAdjacent = [loc for loc in grid.reproductionneighborLocs[agent.gridlocation] if grid.agentMatrix[loc[0]][loc[1]] == None]
 		if emptyAdjacent:
-			if rnd.random() < normalizePtr(agent.ptr,minPosPay,maxPosPay):
-				if keepGroupsEqual:
-					if counts[agent.tag] < maxGroupSize:
-						newAgent = agent.clone(tags, mu)
+			if rnd.random() < normalizePtr(agent.ptr,g.minPosPay,g.maxPosPay):
+				if g.keepGroupsEqual:
+					if counts[agent.tag] < g.maxGroupSize:
+						newAgent = agent.clone(g.tags, g.mu)
 						grid.place_agent(newAgent, rnd.choice(emptyAdjacent))
 						agentsAdded.append(newAgent)
-						agent_opponents[newAgent] = []
-						no_games[newAgent] = 0.0
+						g.agent_opponents[newAgent] = []
+						g.no_games[newAgent] = 0.0
 				else:
-					newAgent = agent.clone(tags, mu)
+					newAgent = agent.clone(g.tags, g.mu)
 					grid.place_agent(newAgent, rnd.choice(emptyAdjacent))
 					agentsAdded.append(newAgent)
-					agent_opponents[newAgent] = []
-					no_games[newAgent] = 0.0
+					g.agent_opponents[newAgent] = []
+					g.no_games[newAgent] = 0.0
 	agents.extend(agentsAdded)
 
 	##### death
 	for agent in agents:
-		if rnd.random() < deathrate:
+		if rnd.random() < g.deathrate:
 			agents.remove(agent)
 			grid.remove_agent(agent) #******
 
 			# updating dictionary and average number of unique opponents each agent plays
-			avg_diff_agents = avg_diff_agents*(cnt_dead/(cnt_dead+1.0))+len(agent_opponents[agent])/(cnt_dead+1.0)
-			if len(agent_opponents[agent]) > 0:
-				avg_same = avg_same*(cnt_dead/(cnt_dead+1.0)) + (no_games[agent]/len(agent_opponents[agent]))/(cnt_dead+1.0)
-				avg_same_gt_1 = avg_same_gt_1*(cnt_len_gt_0/(cnt_len_gt_0+1.0)) + (no_games[agent]/len(agent_opponents[agent]))/(cnt_len_gt_0+1.0)
-				cnt_len_gt_0 += 1.0
+			g.avg_diff_agents = g.avg_diff_agents*(g.cnt_dead/(g.cnt_dead+1.0))+len(g.agent_opponents[agent])/(g.cnt_dead+1.0)
+			if len(g.agent_opponents[agent]) > 0:
+				g.avg_same = g.avg_same*(g.cnt_dead/(g.cnt_dead+1.0)) + (g.no_games[agent]/len(g.agent_opponents[agent]))/(g.cnt_dead+1.0)
+				g.avg_same_gt_1 = g.avg_same_gt_1*(g.cnt_len_gt_0/(g.cnt_len_gt_0+1.0)) + (g.no_games[agent]/len(g.agent_opponents[agent]))/(g.cnt_len_gt_0+1.0)
+				g.cnt_len_gt_0 += 1.0
 			else:
-				avg_same = avg_same*(cnt_dead/(cnt_dead+1.0))
-			cnt_dead += 1.0
-			del agent_opponents[agent]
-			del no_games[agent]
+				g.avg_same = g.avg_same*(g.cnt_dead/(g.cnt_dead+1.0))
+			g.cnt_dead += 1.0
+			del g.agent_opponents[agent]
+			del g.no_games[agent]
 
 	##### mobility
-	if mobility:
+	if g.mobility:
 		for agent in agents:
-			if rnd.random() < mobility:
+			if rnd.random() < g.mobility:
 
 				bestEmptyLoc = agent.gridlocation
 				bestNumSameTag = 0
@@ -291,12 +202,12 @@ def step(agents, grid, counts):
 					if neigh.tag == agent.tag:
 						bestNumSameTag += 1
 
-				if moveTowardOwn:
+				if g.moveTowardOwn:
 
-					if moveRange >= grid.nrows:
+					if g.moveRange >= grid.nrows:
 						locations = grid.get_empty_sites()
 					else:
-						locations = grid.get_empty_locs_in_range(agent.gridlocation, moveRange)
+						locations = grid.get_empty_locs_in_range(agent.gridlocation, g.moveRange)
 					rnd.shuffle(locations)
 					for location in locations:
 						neighsOfEmptySite = grid.get_neighbors_of_loc(location)
@@ -311,16 +222,16 @@ def step(agents, grid, counts):
 					grid.move_agent(agent, bestEmptyLoc)
 				else:
 					# move to random open spot
-					if moveRange >= grid.nrows:
+					if g.moveRange >= grid.nrows:
 						posslocs = grid.get_empty_sites()
 					else:
-						posslocs = grid.get_empty_locs_in_range(agent.gridlocation, moveRange)
+						posslocs = grid.get_empty_locs_in_range(agent.gridlocation, g.moveRange)
 					if posslocs:
 						moveToLoc = rnd.choice(posslocs)
 						grid.move_agent(agent, moveToLoc)
 
 	totalOutgroupInteractionPerc = 0
-	if PAIRALLNEIGHS == True:
+	if g.PAIRALLNEIGHS == True:
 		if len(pairs) > 0:
 			totalOutgroupInteractionPerc = totalOutgroupInteractions/float(len(pairs))
 	else:
@@ -334,7 +245,7 @@ def step(agents, grid, counts):
 
 	alive_proportion = float((grid.nrows*grid.ncols) - len(grid.emptySites))/float(grid.nrows*grid.ncols)
 	alive_file.write(str(alive_proportion)+"\n")
-	diff_games_file.write(str(avg_diff_agents)+","+str(avg_same)+","+str(avg_same_gt_1)+"\n")
+	diff_games_file.write(str(g.avg_diff_agents)+","+str(g.avg_same)+","+str(g.avg_same_gt_1)+"\n")
 
 	return agents, grid, counts
 
@@ -343,14 +254,14 @@ def step(agents, grid, counts):
 def normalizePtr(ptr,minPosPay,maxPosPay):
 	# Normalizes ptr so that the possible range is [0,1].
 
-	if normPtr:
+	if g.normPtr:
 		return (float(ptr) - minPosPay)/float((maxPosPay - minPosPay))
 	else:
 		return ptr
 
 def resetPTR(agents):
 	for agent in agents:
-		agent.ptr = basePTR
+		agent.ptr = g.basePTR
 
 def setTagMatrix(population,M):
 	for agent in population:
@@ -363,9 +274,9 @@ def main():
 
 	try:
 		time = 0
-		agents, grid, counts = init(grid_initialization)
+		agents, grid, counts = init(g.grid_initialization)
 		print "initialized."
-		while time < maxTime:
+		while time < g.maxTime:
 			agents, grid, counts = step(agents, grid, counts)
 			if time%10 == 0:
 				print "time:", time
@@ -377,13 +288,12 @@ def main():
 		diff_games_file.close()
 
 # run simulation using pyxcsimulator
-coeff_file = open(results_folder+"coeff_"+str(runId)+".txt",'wb')
+stats = st.Stats(g.tags, g.runId, g.results_folder) # to record statistics, e.g. counts over time
+coeff_file = open(g.results_folder+"coeff_"+str(g.runId)+".txt",'wb')
 coeff_file.write("clustering_coefficient\n")
-alive_file = open(results_folder+"alive_"+str(runId)+".txt","wb")
+alive_file = open(g.results_folder+"alive_"+str(g.runId)+".txt","wb")
 alive_file.write("alive_proportion\n")
-diff_games_file = open(results_folder+"diff_games__"+str(runId)+".txt","wb")
+diff_games_file = open(g.results_folder+"diff_games__"+str(g.runId)+".txt","wb")
 diff_games_file.write("no_unique_games,no_games_same_agent,no_games_same_agent_gt_1\n")
 main()
-
-
 
