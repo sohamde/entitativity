@@ -24,15 +24,7 @@ def step(agents, grid, counts):
 	- immigration, interaction, reproduction, death, mobility
 	"""
 
-	##### immigration --- place immigrants with random traits on random site.
-	emptySites = list(grid.get_empty_sites())
-	randEmptySitesToPopulate = rnd.sample(emptySites,min(g.imRate,len(emptySites)))
-	for loc in randEmptySitesToPopulate:
-		immigrant = ag.spawnRandomAgent(g.tags, g.onlyEnt)
-		grid.place_agent(immigrant, loc)
-		agents.append(immigrant)
-		g.agent_opponents[immigrant] = []
-		g.no_games[immigrant] = 0.0
+	agents, grid = immigration(agents, grid)
 
 	##### interaction
 	totalOutgroupInteractions = inCoops = inDefects = outCoops = outDefects = 0

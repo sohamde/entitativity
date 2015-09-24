@@ -37,3 +37,16 @@ def init(opt):
 		g.no_games[immigrant] = 0.0           # adding new agent to no_games dictionary
 	counts = g.stats.getCounts(agents)        # counting agents of different types and tags
 	return agents, grid, counts
+
+
+def immigration(agents, grid):
+	##### immigration --- place immigrants with random traits on random site.
+	emptySites = list(grid.get_empty_sites())
+	randEmptySitesToPopulate = rnd.sample(emptySites,min(g.imRate,len(emptySites)))
+	for loc in randEmptySitesToPopulate:
+		immigrant = ag.spawnRandomAgent(g.tags, g.onlyEnt)
+		grid.place_agent(immigrant, loc)
+		agents.append(immigrant)
+		g.agent_opponents[immigrant] = []
+		g.no_games[immigrant] = 0.0
+	return agents, grid
