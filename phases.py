@@ -182,3 +182,47 @@ def death(agents, grid):
 			del g.no_games[agent]
 
 	return agents, grid
+
+
+def mobility(agents, grid):
+	##### mobility
+	if g.mobility:
+		for agent in agents:
+			if rnd.random() < g.mobility:
+
+				bestEmptyLoc = agent.gridlocation
+				bestNumSameTag = 0
+				neighs = grid.get_neighbors(agent)
+				for neigh in neighs:
+					if neigh.tag == agent.tag:
+						bestNumSameTag += 1
+
+				if g.moveTowardOwn:
+
+					if g.moveRange >= grid.nrows:
+						locations = grid.get_empty_sites()
+					else:
+						locations = grid.get_empty_locs_in_range(agent.gridlocation, g.moveRange)
+					rnd.shuffle(locations)
+					for location in locations:
+						neighsOfEmptySite = grid.get_neighbors_of_loc(location)
+						if neighsOfEmptySite:
+							numSameTag = 0
+							for neigh in neighsOfEmptySite:
+								if neigh.tag == agent.tag:
+									numSameTag += 1
+							if bestNumSameTag < numSameTag:
+								bestNumSameTag = numSameTag
+								bestEmptyLoc = location
+					grid.move_agent(agent, bestEmptyLoc)
+				else:
+					# move to random open spot
+					if g.moveRange >= grid.nrows:
+						posslocs = grid.get_empty_sites()
+					else:
+						posslocs = grid.get_empty_locs_in_range(agent.gridlocation, g.moveRange)
+					if posslocs:
+						moveToLoc = rnd.choice(posslocs)
+						grid.move_agent(agent, moveToLoc)
+
+	return agents, grid
