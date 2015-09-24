@@ -15,8 +15,6 @@ from triplet_clustering import empty_ignore
 from phases import *
 
 
-# ~~~~~ MAIN FUNCTIONS: INIT, STEP ~~~~~
-
 def step(agents, grid, counts):
 	"""
 	Steps through time period stages by Hammond and Axelrod (2006):
