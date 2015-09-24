@@ -2,7 +2,7 @@
 #
 # Torus class to facilitate a grid environment on which agents interact.
 #
-# @author: Soham De, Patrick Roos
+# @authors: Soham De, Patrick Roos
 # #############################
 
 
