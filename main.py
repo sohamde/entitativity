@@ -114,14 +114,15 @@ def init(opt):
 	"""
 	Creates and initializes agents and grid. Empty grid is initialized.
 	"""
+	global agent_opponents, no_games
 	agents = []     # initialize list of agents
 	grid = Torus(n, n, neighborhood, reproduction_neighborhood)
 	counts = stats.getCounts(agents)
 	if opt == 0:
 		return agents, grid, counts
 	# populating grid with random agents at every spot
-	emptySites = list(grid.get_empty_sites())
-	tag = rnd.choice(tags)
+	emptySites = list(grid.get_empty_sites())   # getting empty spots in the grid
+	tag = rnd.choice(tags)          # randomly choosing a specific tag (relevant for opt = 2,3,4
 	for loc in emptySites:
 		if opt == 1:    # random agent on each node of the grid
 			immigrant = ag.spawnRandomAgent(tags, onlyEnt)
@@ -134,11 +135,11 @@ def init(opt):
 		else:
 			print("invalid opt option")
 			sys.exit(0)
-		grid.place_agent(immigrant, loc)
-		agents.append(immigrant)
-		agent_opponents[immigrant] = []
-		no_games[immigrant] = 0.0
-	counts = stats.getCounts(agents)
+		grid.place_agent(immigrant, loc)    # placing agent on grid location
+		agents.append(immigrant)            # adding new agent to agent list
+		agent_opponents[immigrant] = []     # adding new agent to agent_opponents dictionary
+		no_games[immigrant] = 0.0           # adding new agent to no_games dictionary
+	counts = stats.getCounts(agents)        # counting agents of different types and tags
 	return agents, grid, counts
 
 
