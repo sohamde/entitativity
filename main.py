@@ -89,7 +89,7 @@ grid_initialization = 4     # Hammond and Axelrod initialized with empty grid, i
 if hawkdove:
 	runId = "HD_v"+str(b)+"c"+str(c)+"_g"+str(nTags)+"_i"+str(numIts)+"_m"+str(mobility)+"_mr"+str(moveRange)+"_numneighs"+str(len(neighborhood))+"_"
 else:
-	runId = "PD_b"+str(b)+"c"+str(c)+"_g"+str(nTags)+"_i"+str(numIts)+"_m"+str(mobility)+"_mr"+str(moveRange)+"_numneighs"+str(len(neighborhood))+"_"
+	runId = "PD_b"+str(b)+"c"+str(c)+"_g"+str(nTags)+"_i"+str(numIts)+"_m"+str(mobility)+"_mr"+str(moveRange)+"_numneighs"+str(len(neighborhood))+"_init"+str(grid_initialization)+"_"
 if PAIRALLNEIGHS:
 	runId+="pairallneighs_"
 else:
