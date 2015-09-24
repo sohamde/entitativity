@@ -27,7 +27,7 @@ class Torus:
 					c = (j + dc) % ncols
 					neighLocs.append((r,c))
 				self.neighborLocs[(i,j)] = neighLocs
-	
+
 		self.reproductionneighborLocs = {}
 		for i in range(self.nrows):
 			for j in range(self.ncols):
