@@ -11,15 +11,10 @@
 # @version: sep-2015
 # ###############################
 
-import random as rnd
 rnd.seed()
-import sys
-import agent as ag
-import stats_files as st
-from torus import *
 from two_player_game import *
 from triplet_clustering import empty_ignore
-import globals as g
+from phases import *
 
 
 # ~~~~~ MAIN FUNCTIONS: INIT, STEP ~~~~~
@@ -30,7 +25,7 @@ def init(opt):
 
 	agents = []     # initialize list of agents
 	grid = Torus(g.n, g.n, g.neighborhood, g.reproduction_neighborhood)
-	counts = stats.getCounts(agents)
+	counts = g.stats.getCounts(agents)
 	if opt == 0:
 		return agents, grid, counts
 	# populating grid with random agents at every spot
@@ -52,7 +47,7 @@ def init(opt):
 		agents.append(immigrant)            # adding new agent to agent list
 		g.agent_opponents[immigrant] = []     # adding new agent to agent_opponents dictionary
 		g.no_games[immigrant] = 0.0           # adding new agent to no_games dictionary
-	counts = stats.getCounts(agents)        # counting agents of different types and tags
+	counts = g.stats.getCounts(agents)        # counting agents of different types and tags
 	return agents, grid, counts
 
 
@@ -238,7 +233,7 @@ def step(agents, grid, counts):
 		if numInteractions > 0:
 			totalOutgroupInteractionPerc = totalOutgroupInteractions/float(numInteractions)
 
-	counts = stats.step(agents, inCoops, inDefects, outCoops, outDefects, totalOutgroupInteractionPerc)
+	counts = g.stats.step(agents, inCoops, inDefects, outCoops, outDefects, totalOutgroupInteractionPerc)
 
 	clustering_coeff = empty_ignore(agents,grid)
 	coeff_file.write(str(clustering_coeff)+"\n")
@@ -282,13 +277,12 @@ def main():
 				print "time:", time
 			time += 1
 	finally:
-		stats.close_files()
+		g.stats.close_files()
 		coeff_file.close()
 		alive_file.close()
 		diff_games_file.close()
 
 # run simulation using pyxcsimulator
-stats = st.Stats(g.tags, g.runId, g.results_folder) # to record statistics, e.g. counts over time
 coeff_file = open(g.results_folder+"coeff_"+str(g.runId)+".txt",'wb')
 coeff_file.write("clustering_coefficient\n")
 alive_file = open(g.results_folder+"alive_"+str(g.runId)+".txt","wb")

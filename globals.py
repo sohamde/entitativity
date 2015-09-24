@@ -1,4 +1,5 @@
 import sys
+import stats_files as st
 
 ######################### MAIN ENVIRONMENT PARAMETERS #########################
 nTags = 4				# number of tags in environment
@@ -84,3 +85,5 @@ if normPtr:
 if moveTowardOwn:
 	runId += "moveTowardOwn_"
 runId += str(sys.argv[1])
+
+stats = st.Stats(tags, runId, results_folder) # to record statistics, e.g. counts over time
