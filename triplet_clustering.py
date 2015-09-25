@@ -11,7 +11,6 @@ def empty_ignore(agents, grid):
 	same_triplet = 0.0
 	for triplet in triplets:
 		if triplet[0].tag == triplet[1].tag and triplet[0].tag == triplet[2].tag:
-		#if triplet[0].tag == triplet[1].tag:
 			same_triplet += 1.0
 	if total_triplets == 0:
 		return 0.0

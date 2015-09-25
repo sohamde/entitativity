@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # for mobility settings
-import job_settings as s
 last_x_value = 0.08
 steps = 1
 

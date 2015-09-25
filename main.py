@@ -11,7 +11,6 @@
 # @version: sep-2015
 # ###############################
 
-from triplet_clustering import empty_ignore
 from phases import *
 
 

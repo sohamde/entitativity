@@ -2,9 +2,9 @@ import agent as ag
 from torus import *
 import sys
 import random as rnd
-rnd.seed()
 from two_player_game import *
 from utils import *
+rnd.seed()
 
 
 def init(opt):

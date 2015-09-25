@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # for mobility settings
-#import job_settings as s
 total_generations = 20000
 
 # input file to plot

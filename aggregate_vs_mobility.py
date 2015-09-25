@@ -4,9 +4,6 @@ Saves in a file, which contains a row for each mobility value
 Author: Soham De
 """
 
-import job_settings as s
-import sys
-
 #total_generations = 20000
 average_length = 1.0
 
