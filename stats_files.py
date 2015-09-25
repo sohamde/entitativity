@@ -58,8 +58,12 @@ class Stats:
 
 		self.alive_file = open(results_folder+"alive_"+str(runID)+".txt","wb")
 		self.alive_file.write("alive_proportion\n")
+
+		self.coeff_file = open(results_folder+"coeff_"+str(runID)+".txt",'wb')
+		self.coeff_file.write("clustering_coefficient\n")
+
 	
-	def step(self, agents, inCoops, inDefects, outCoops, outDefects, outGroupIntPerc, alive_proportion):
+	def step(self, agents, inCoops, inDefects, outCoops, outDefects, outGroupIntPerc, alive_proportion, clustering_coeff):
 		""" Records everything for this time step. """
 			
 		n = len(agents)
@@ -174,6 +178,7 @@ class Stats:
 				self.outStratCountFile.write(str(props[strat])+",")
 
 		self.alive_file.write(str(alive_proportion)+"\n")
+		self.coeff_file.write(str(clustering_coeff)+"\n")
 
 		return counts
 
@@ -283,4 +288,4 @@ class Stats:
 		self.outStratCountFile.close()
 		self.tagCountFile.close()
 		self.alive_file.close()
-
+		self.coeff_file.close()
