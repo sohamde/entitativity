@@ -62,8 +62,11 @@ class Stats:
 		self.coeff_file = open(results_folder+"coeff_"+str(runID)+".txt",'wb')
 		self.coeff_file.write("clustering_coefficient\n")
 
+		self.diff_games_file = open(results_folder+"diff_games_"+str(runID)+".txt","wb")
+		self.diff_games_file.write("no_unique_games,no_games_same_agent,no_games_same_agent_gt_1\n")
+
 	
-	def step(self, agents, inCoops, inDefects, outCoops, outDefects, outGroupIntPerc, alive_proportion, clustering_coeff):
+	def step(self, agents, inCoops, inDefects, outCoops, outDefects, outGroupIntPerc, alive_proportion, clustering_coeff, diff_games_list):
 		""" Records everything for this time step. """
 			
 		n = len(agents)
@@ -179,6 +182,7 @@ class Stats:
 
 		self.alive_file.write(str(alive_proportion)+"\n")
 		self.coeff_file.write(str(clustering_coeff)+"\n")
+		self.diff_games_file.write(str(diff_games_list[0])+","+str(diff_games_list[1])+","+str(diff_games_list[2])+"\n")
 
 		return counts
 
@@ -289,3 +293,4 @@ class Stats:
 		self.tagCountFile.close()
 		self.alive_file.close()
 		self.coeff_file.close()
+		self.diff_games_file.close()

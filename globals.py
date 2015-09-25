@@ -87,6 +87,3 @@ if moveTowardOwn:
 runId += str(sys.argv[1])
 
 stats = st.Stats(tags, runId, results_folder) # to record statistics, e.g. counts over time
-
-diff_games_file = open(results_folder+"diff_games_"+str(runId)+".txt","wb")
-diff_games_file.write("no_unique_games,no_games_same_agent,no_games_same_agent_gt_1\n")

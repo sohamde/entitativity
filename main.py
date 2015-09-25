@@ -43,9 +43,9 @@ def step(agents, grid, counts):
 
 	clustering_coeff = empty_ignore(agents,grid)
 
-	counts = g.stats.step(agents, inCoops, inDefects, outCoops, outDefects, totalOutgroupInteractionPerc, alive_proportion, clustering_coeff)
+	diff_games_list = [g.avg_diff_agents, g.avg_same, g.avg_same_gt_1]
 
-	g.diff_games_file.write(str(g.avg_diff_agents)+","+str(g.avg_same)+","+str(g.avg_same_gt_1)+"\n")
+	counts = g.stats.step(agents, inCoops, inDefects, outCoops, outDefects, totalOutgroupInteractionPerc, alive_proportion, clustering_coeff, diff_games_list)
 
 	return agents, grid, counts
 
@@ -64,4 +64,3 @@ if __name__ == "__main__":
 			time += 1
 	finally:
 		g.stats.close_files()
-		g.diff_games_file.close()
