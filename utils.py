@@ -1,5 +1,6 @@
 ## Various helper methods.
-## authors: Soham De (sohamde@cs.umd.edu), Patrick Roos (roos@cs.umd.edu)
+## authors: soham de, patrick roos
+## emails: (sohamde, roos at cs umd edu)
 
 import globals as g
 
