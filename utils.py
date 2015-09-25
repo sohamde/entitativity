@@ -1,17 +1,13 @@
-## utils.py
-##
 ## Various helper methods.
-##
-## author: Soham De, Patrick Roos (roos@cs.umd.edu)
-## 
+## authors: Soham De (sohamde@cs.umd.edu), Patrick Roos (roos@cs.umd.edu)
 
 import globals as g
 
 
 def empty_ignore(agents, grid):
 	"""
-	calculating a modified clustering coefficient from a grid network
-	considers only triplets where all 3 spots are filled
+	Calculates a modified clustering coefficient from a grid torus network
+	Considers only triplets where all 3 spots are filled
 	"""
 	triplets = grid.get_all_triplets()
 	total_triplets = len(triplets)
@@ -38,9 +34,9 @@ def resetPTR(agents):
 		agent.ptr = g.basePTR
 
 
-def transpose(seqseq):
-	"""Return transpose of `seqseq`."""
-	return zip(*seqseq)
+def transpose(seq):
+	"""Return transpose of `seq`."""
+	return zip(*seq)
 
 
 def mean(seq):
