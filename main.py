@@ -39,13 +39,13 @@ def step(agents, grid, counts):
 		if numInteractions > 0:
 			totalOutgroupInteractionPerc = totalOutgroupInteractions/float(numInteractions)
 
-	counts = g.stats.step(agents, inCoops, inDefects, outCoops, outDefects, totalOutgroupInteractionPerc)
+	alive_proportion = float((grid.nrows*grid.ncols) - len(grid.emptySites))/float(grid.nrows*grid.ncols)
+
+	counts = g.stats.step(agents, inCoops, inDefects, outCoops, outDefects, totalOutgroupInteractionPerc, alive_proportion)
 
 	clustering_coeff = empty_ignore(agents,grid)
 	g.coeff_file.write(str(clustering_coeff)+"\n")
 
-	alive_proportion = float((grid.nrows*grid.ncols) - len(grid.emptySites))/float(grid.nrows*grid.ncols)
-	g.alive_file.write(str(alive_proportion)+"\n")
 	g.diff_games_file.write(str(g.avg_diff_agents)+","+str(g.avg_same)+","+str(g.avg_same_gt_1)+"\n")
 
 	return agents, grid, counts
@@ -56,17 +56,14 @@ if __name__ == "__main__":
 
 	try:
 		time = 0
-		agents, grid, counts = init(g.grid_initialization)
+		agents_list, grid_object, stat_counts = init(g.grid_initialization)
 		print "initialized."
 		while time < g.maxTime:
-			agents, grid, counts = step(agents, grid, counts)
+			agents_list, grid_object, stat_counts = step(agents_list, grid_object, stat_counts)
 			if time%10 == 0:
 				print "time:", time
 			time += 1
 	finally:
 		g.stats.close_files()
 		g.coeff_file.close()
-		g.alive_file.close()
 		g.diff_games_file.close()
-
-

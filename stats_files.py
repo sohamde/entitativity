@@ -13,17 +13,16 @@ class Stats:
 	def __init__(self, tags, runID="x", results_folder='./results/'):
 
 		self.tags = tags
-
 		# will hold the latest (current) val of all the following, so that we can plot it:
-		inGrpDefPerc = 0
-		outGrpDefPerc = 0
-		cProp_curr = 0 				# cooperation rate
-		outGroupIntPerc_curr = 0	# out-group interaction rate
-		collProp_curr = 0 			# % of collectivists
-		indProp_curr = 0			# % of individualists
-		avgP_curr = avgQ_curr = avgI_curr = 0 		# population pqi averages
-		avgInP_curr = avgInQ_curr = avgInI_curr = 0	# collectivist's in-group pqi averages
-		avgOutP_curr = avgOutQ_curr = avgOutI_curr = 0 # collectivist's out-group pqi averages
+		self.inGrpDefPerc = 0
+		self.outGrpDefPerc = 0
+		self.cProp_curr = 0 				# cooperation rate
+		self.outGroupIntPerc_curr = 0	# out-group interaction rate
+		self.collProp_curr = 0 			# % of collectivists
+		self.indProp_curr = 0			# % of individualists
+		self.avgP_curr = self.avgQ_curr = self.avgI_curr = 0 		# population pqi averages
+		self.avgInP_curr = self.avgInQ_curr = self.avgInI_curr = 0	# collectivist's in-group pqi averages
+		self.avgOutP_curr = self.avgOutQ_curr = self.avgOutI_curr = 0 # collectivist's out-group pqi averages
 
 		self.resultFile = open(results_folder+"results_"+str(runID)+".txt",'wb')
 		self.resultFile.write("inGrpDefPerc,outGrpDefPerc,coopProp,outGrpIntProp,collProp,indProp,avgP,avgQ,avgI,avgInP,avgInQ,avgInI,avgOutP,avgOutQ,avgOutI\n")		
@@ -57,8 +56,10 @@ class Stats:
 			else:
 				self.outStratCountFile.write(strat+",")
 
+		self.alive_file = open(results_folder+"alive_"+str(runID)+".txt","wb")
+		self.alive_file.write("alive_proportion\n")
 	
-	def step(self, agents, inCoops, inDefects, outCoops, outDefects, outGroupIntPerc):
+	def step(self, agents, inCoops, inDefects, outCoops, outDefects, outGroupIntPerc, alive_proportion):
 		""" Records everything for this time step. """
 			
 		n = len(agents)
@@ -172,6 +173,8 @@ class Stats:
 			else:			
 				self.outStratCountFile.write(str(props[strat])+",")
 
+		self.alive_file.write(str(alive_proportion)+"\n")
+
 		return counts
 
 
@@ -279,4 +282,5 @@ class Stats:
 		self.inStratCountFile.close()
 		self.outStratCountFile.close()
 		self.tagCountFile.close()
+		self.alive_file.close()
 

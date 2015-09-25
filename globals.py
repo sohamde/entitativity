@@ -90,7 +90,5 @@ stats = st.Stats(tags, runId, results_folder) # to record statistics, e.g. count
 
 coeff_file = open(results_folder+"coeff_"+str(runId)+".txt",'wb')
 coeff_file.write("clustering_coefficient\n")
-alive_file = open(results_folder+"alive_"+str(runId)+".txt","wb")
-alive_file.write("alive_proportion\n")
 diff_games_file = open(results_folder+"diff_games__"+str(runId)+".txt","wb")
 diff_games_file.write("no_unique_games,no_games_same_agent,no_games_same_agent_gt_1\n")
