@@ -1,6 +1,6 @@
 ## Torus class to facilitate a grid environment on which agents interact.
 ## authors: soham de, patrick roos
-## emails: (sohamde, roos at cs umd edu)
+## emails: (sohamde, roos) at cs umd edu
 
 
 class Torus:

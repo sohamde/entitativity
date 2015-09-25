@@ -1,13 +1,9 @@
-# ##########################
-#
-# *** Agent for group conflict model ****
-#	
-# These agents have a collevtivist/individualist trait that determines whether they 
-# see others as individuals or group members. 
-#
-# @author: roos@cs.umd.edu
-# @veraion: aug-2013
-# ##########################
+## Agent for group conflict model
+## These agents have a group-entitative/individual-entitative trait that determines whether they
+## see others as individuals or group members.
+## authors: soham de, patrick roos
+## emails: (sohamde, roos) at cs umd edu
+
 import random as rnd
 from ordered_dict import *
 import sys
