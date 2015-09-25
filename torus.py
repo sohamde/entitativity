@@ -17,6 +17,7 @@ class Torus:
 		self.agentMatrix = [[None]*ncols for i in range(nrows)] # ncols x nrows matrix that has agent or None at each location
 		
 		self.emptySites = [(i,j) for i in range(nrows) for j in range(ncols)]
+		self.allSites = [(i,j) for i in range(nrows) for j in range(ncols)]
 
 		# for each location (x,y) key will hold neighboring locations as list
 		self.neighborLocs = {}
@@ -109,6 +110,18 @@ class Torus:
 			for j in range(location[1] - r, location[1] + r):
 				locs_in_range.append( ( i%self.nrows, j%self.ncols) )
 		return [loc for loc in locs_in_range if self.agentMatrix[loc[0]][loc[1]] == None]
+
+	def get_all_sites(self):
+		""" Returns list of (x,y) tuples that are grid locations. """
+		return self.allSites
+
+	def get_all_locs_in_range(self,location, r):
+		""" Return all locations within range r of location """
+		locs_in_range = []
+		for i in range(location[0] - r, location[0] + r):
+			for j in range(location[1] - r, location[1] + r):
+				locs_in_range.append( ( i%self.nrows, j%self.ncols) )
+		return [loc for loc in locs_in_range]
 
 	def get_neighbors(self, agent):
 		""" Return neighbors of agent. """

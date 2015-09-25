@@ -9,6 +9,7 @@ import sys
 import random as rnd
 from two_player_game import *
 from utils import *
+import math
 rnd.seed()
 
 
@@ -178,7 +179,7 @@ def reproduction(agents, grid, counts):
 
 		# reproduce into randomly chosen empty neighboring spot
 		if emptyAdjacent:
-			if rnd.random() < normalizePtr(agent.ptr,g.minPosPay,g.maxPosPay):
+			if rnd.random() < normalizePtr(agent.ptr, g.minPosPay, g.maxPosPay):
 				if g.keepGroupsEqual:
 					if counts[agent.tag] < g.maxGroupSize:
 						newAgent = agent.clone(g.tags, g.mu)
@@ -268,5 +269,96 @@ def mobility(agents, grid):
 					if posslocs:
 						moveToLoc = rnd.choice(posslocs)
 						grid.move_agent(agent, moveToLoc)
+
+	return agents, grid
+
+
+def reproduction_fermi(agents, grid, counts):
+	"""
+	reproduction phase: each agent chooses one of its neighbors as a potential teacher and copies the neighbor's
+	action with some probability (specified by the fermi rule)
+	does not ensure keepGroupsEqual is satisfied even when set
+	"""
+
+	rnd.shuffle(agents)
+	agentsAdded = list()
+	for agent in agents:
+		# give agent chance (ptr) to clone into a random open adjacent spot, if it exists
+		adjacent = list(grid.reproductionneighborLocs[agent.gridlocation])
+
+		# copy a neighbor with some probability specified by the fermi rule
+		if adjacent:
+			teacher_loc = rnd.choice(adjacent)
+			teacher = grid.agentMatrix[teacher_loc[0]][teacher_loc[1]]
+			agent_ptr = normalizePtr(agent.ptr, g.minPosPay, g.maxPosPay)
+			teacher_ptr = normalizePtr(teacher.ptr, g.minPosPay, g.maxPosPay)
+			difference = teacher_ptr - agent_ptr
+			s = 1.0
+			p = 1.0/(1 + math.exp(-s*difference))
+			if rnd.random() <= p:
+				if g.keepGroupsEqual:
+					if counts[teacher.tag] < g.maxGroupSize:
+						newAgent = teacher.clone(g.tags, g.mu)
+						grid.remove_agent(agent)
+						grid.place_agent(newAgent, agent.gridlocation)
+						agentsAdded.append(newAgent)
+						g.agent_opponents[newAgent] = []
+						g.no_games[newAgent] = 0.0
+				else:
+					newAgent = teacher.clone(g.tags, g.mu)
+					grid.remove_agent(agent)
+					grid.place_agent(newAgent, agent.gridlocation)
+					agentsAdded.append(newAgent)
+					g.agent_opponents[newAgent] = []
+					g.no_games[newAgent] = 0.0
+
+	agents.extend(agentsAdded)
+
+	return agents, grid, counts
+
+
+def mobility_switch_positions(agents, grid):
+	"""
+	mobility phase: each agent with some probability switches positions with a randomly chosen agent in the grid
+	"""
+
+	if g.mobility:
+		for agent in agents:
+			if rnd.random() < g.mobility:
+
+				bestLoc = agent.gridlocation
+				bestNumSameTag = 0
+				neighs = grid.get_neighbors(agent)
+				for neigh in neighs:
+					if neigh.tag == agent.tag:
+						bestNumSameTag += 1
+
+				if g.moveTowardOwn:
+
+					if g.moveRange >= grid.nrows:
+						locations = grid.get_all_sites()
+					else:
+						locations = grid.get_all_locs_in_range(agent.gridlocation, g.moveRange)
+					rnd.shuffle(locations)
+					for location in locations:
+						neighsOfSite = grid.get_neighbors_of_loc(location)
+						if neighsOfSite:
+							numSameTag = 0
+							for neigh in neighsOfSite:
+								if neigh.tag == agent.tag:
+									numSameTag += 1
+							if bestNumSameTag < numSameTag:
+								bestNumSameTag = numSameTag
+								bestLoc = location
+					grid.switch_agents(agent, grid.agentMatrix[bestLoc[0]][bestLoc[1]])
+				else:
+					# move to random open spot
+					if g.moveRange >= grid.nrows:
+						posslocs = grid.get_all_sites()
+					else:
+						posslocs = grid.get_all_locs_in_range(agent.gridlocation, g.moveRange)
+					if posslocs:
+						moveToLoc = rnd.choice(posslocs)
+						grid.switch_agents(agent, grid.agentMatrix[moveToLoc[0]][moveToLoc[1]])
 
 	return agents, grid

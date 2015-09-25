@@ -79,7 +79,7 @@ class EntAgent:
 				return self.outI
 		
 	def clone(self, tags, mu):
-		""" mutation phase """
+		""" mutation phase (same as specified in Hammond & Axelrod 2006) """
 
 		newTag = self.tag
 		if rnd.random() < mu:
@@ -175,7 +175,7 @@ class IndAgent:
 			return self.i
 			
 	def clone(self, tags, mu):
-		""" mutation phase """
+		""" mutation phase (same as specified in Hammond & Axelrod 2006) """
 
 		newTag = self.tag
 		if rnd.random() < mu:
