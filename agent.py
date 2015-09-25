@@ -11,6 +11,7 @@ import sys
 
 class EntAgent:
 	"""
+	Group-entitative agent class
 	"""
 
 	def __init__(self, tag, inP, inQ, inI, outP, outQ, outI, gridloc=None):
@@ -20,9 +21,8 @@ class EntAgent:
 		@param 
 					- p is the pure strategy if the opponent group cooperated in the last move against me
 					- q is the pure strategy if the opponent group defected in the last move against me
-					- i is the pure strategy to use agisnt unknown
-					- since only pure strategies, p and q are either 0 (cooperate) or 1 (defect)
-		@param i: what to play against unknown group when no history available 0 (cooperate) or 1 (defect)
+					- i is the pure strategy to use the first time a new group is encountered (no history available)
+					- since only pure strategies, p, q and i are either 0 (cooperate) or 1 (defect)
 		"""
 		self.tag = tag
 		self.CorI = "ent"
@@ -30,19 +30,19 @@ class EntAgent:
 		self.ptr = 0
 		self.gridlocation = gridloc
 
+		# strategy against in-group agents
 		self.inP = inP
 		self.inQ = inQ
 		self.inI = inI
 
+		# strategy against out-group agents
 		self.outP = outP
 		self.outQ = outQ
 		self.outI = outI
 
-		self.memory = {} # will hold last move of group against agent {tag -> move}
-
+		self.memory = {}    # will hold last move of group against agent {tag -> move}
 		self.movesThisGen = list()
-
-		self.reset()	 					# sets self.games_played to empty list
+		self.reset()	 	# sets self.games_played to empty list
 			
 	def move(self, game, neighbors):
 		"""Returns move in game (0 is cooperate, 1 is defect)."""
@@ -60,6 +60,7 @@ class EntAgent:
 						else:
 							return self.outQ
 
+		# check if agent has encountered agent from opponent's group before
 		if opponent.tag in self.memory.keys():
 			if self.memory[opponent.tag] == 0:
 				if opponent.tag == self.tag:
@@ -71,13 +72,15 @@ class EntAgent:
 					return self.inQ
 				else:
 					return self.outQ
-		else:
-			if opponent.tag == self.tag:		
+		else:   # else return default action when no history is available
+			if opponent.tag == self.tag:
 				return self.inI
 			else:
 				return self.outI
 		
 	def clone(self, tags, mu):
+		""" mutation phase """
+
 		newTag = self.tag
 		if rnd.random() < mu:
 			newTag = rnd.choice(tags)
@@ -112,16 +115,15 @@ class EntAgent:
 
 	def record(self, game):
 		"""Records the game played to history (games_played) and update memory."""
-		#self.games_played.append(game)
+
 		opp = game.opponents[self]
 		self.memory[opp.tag] = game.get_last_move(opp)
 		self.movesThisGen.append(game.get_last_move(self))
-		#print "self.games_played before recording",self.games_played 
 		self.games_played += 1
-		#print "self.games_played",self.games_played
-		
+
 	def reset(self):
 		"""Resets history to empty."""
+
 		self.games_played = 0
 		self.memory = {}
 		self.movesThisGen = list()
@@ -129,6 +131,7 @@ class EntAgent:
 
 class IndAgent:
 	"""
+	Individual-entitative agent class
 	"""
 
 	def __init__(self, tag, p, q, i, gridloc=None):
@@ -138,40 +141,42 @@ class IndAgent:
 		@param 
 					- p is the pure strategy if the opponent cooperated in the last move against me
 					- q is the pure strategy if the opponent defected in the last move against me
+					- i is the pure strategy to use the first time a new individual is encountered (no history available)
 					- since only pure strategies, p and q are either 0 (cooperate) or 1 (defect)
 		"""
+
 		self.tag = tag
 		self.CorI = "ind"
 
 		self.ptr = 0
 		self.gridlocation = gridloc
-		
+
+		# strategy bits
 		self.p = p
 		self.q = q
 		self.i = i
 	
-		self.memory = OrderedDict() # will hold last move of agent elf {agent -> move}
+		self.memory = OrderedDict()     # will hold last move of agent elf {agent -> move}
 		self.movesThisGen = list()
-		
-		self.reset()	 					# sets self.games_played to empty list
+		self.reset()	 			    # sets self.games_played to empty list
 			
 	def move(self, game, neighbors):
 		"""Returns move in game (0 is cooperate, 1 is defect)."""
 
 		opponent = game.opponents[self]
-		
+
+		# check if opponent encountered before
 		if opponent in self.memory.keys():
-			#print "agent has seen player"
 			if self.memory[opponent] == 0:
-				#print "his last move against him was 0, i play",self.p				
-				return self.p 	
+				return self.p
 			else:
-				#print "his last move against him was 1, i play",self.q				
 				return self.q
-		else:
+		else:   # else return default action
 			return self.i
 			
 	def clone(self, tags, mu):
+		""" mutation phase """
+
 		newTag = self.tag
 		if rnd.random() < mu:
 			newTag = rnd.choice(tags)
@@ -193,21 +198,17 @@ class IndAgent:
 
 	def record(self, game):
 		"""Records the game played to history (games_played) and update memory."""
-		#self.games_played.append(game)
+
 		opp = game.opponents[self]
 		self.memory[opp] = game.get_last_move(opp)
 		self.movesThisGen.append(game.get_last_move(self))
-
 		if len(self.memory.keys()) > 10:
 			self.memory.popitem()
-
-		#print "self.games_played before recording",self.games_played 
-
 		self.games_played += 1
-		#print "self.games_played",self.games_played
 
 	def reset(self):
 		"""Resets history to empty."""
+
 		self.games_played = 0
 		self.memory = {}
 		self.movesThisGen = list()
