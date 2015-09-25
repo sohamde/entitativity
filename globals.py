@@ -75,7 +75,7 @@ moveTowardOwn = False       # whether mobility should be towards agents with sam
 moveRange = n               # range of mobility
 
 # set path to folder where output files will be saved
-cluster = 0     # 1 if running on DeepThought2 cluster, 0 otherwise and set appropriate results folder path
+cluster = 1     # 1 if running on DeepThought2 cluster, 0 otherwise and set appropriate results folder path
 if cluster == 0:
 	results_folder = './results/'
 else:
