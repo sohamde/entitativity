@@ -9,7 +9,8 @@
 #
 # @author: Soham De, Patrick Roos
 # @version: sep-2015
-# ###############################
+## authors: soham de, patrick roos
+## emails: (sohamde, roos) at cs umd edu
 
 from phases import *
 

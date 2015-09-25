@@ -1,3 +1,7 @@
+## authors: soham de, patrick roos
+## emails: (sohamde, roos) at cs umd edu
+
+
 import sys
 import stats_files as st
 
