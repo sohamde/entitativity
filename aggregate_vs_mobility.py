@@ -13,7 +13,7 @@ average_length = 1.0
 # Prefixes of files
 path = 'results/ind_vs_ent_results_new/' #'/lustre/sohamde/Entitativity/src/results/'
 # example_file = 'coeff_PD_b0.03c0.01_g4_i1_m0.1_mr50_numneighs4_pairallneighs_avg.txt'
-prefixes = ['coeff', 'inStratCounts', 'indivStratCounts', 'outStratCounts', 'results', 'tagCounts', 'alive', 'diff_games_']
+prefixes = ['coeff', 'inStratCounts', 'indivStratCounts', 'outStratCounts', 'results', 'tagCounts', 'alive', 'diff_games']
 path_prefix = [path+i for i in prefixes]
 beginning_str = '_PD_b0.03c0.01_g4_i1_m'
 ending_str = '_mr50_numneighs4_pairallneighs_'

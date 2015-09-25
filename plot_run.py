@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # for mobility settings
-import job_settings as s
+#import job_settings as s
 total_generations = 20000
 
 # input file to plot
@@ -69,7 +69,7 @@ for i in range(len(y_values)):
 plt.xlim(0., total_generations)
 plt.xlabel('Time').set_size(18)
 plt.ylabel('Population %').set_size(18)
-if 'diff_games_' not in file_to_plot:
+if 'diff_games' not in file_to_plot:
 	plt.yticks(np.arange(0,1.1,0.1))
 plt.tick_params(axis='both', which='major', labelsize=14)
 #leg = plt.legend(header_list, prop={'size':18})
