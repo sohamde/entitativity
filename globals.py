@@ -38,7 +38,7 @@ basePTR = 0.12
 imRate = 1
 
 # mutation rate (0.05 in Hammond and Axelrod, 2006)
-mu = 0.05
+mu = 0.005
 
 # probability of death (0.10 in Hammond and Axelrod, 2006)
 deathrate = 0.10
