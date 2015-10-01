@@ -4,26 +4,29 @@ Saves in a file, which contains a row for each mobility value
 Author: Soham De
 """
 
-#total_generations = 20000
+total_generations = 30000
 average_length = 1.0
+mp = [x/100.0 for x in range(0, 9)]
 
 # Prefixes of files
-path = 'results/ind_vs_ent_results_new/' #'/lustre/sohamde/Entitativity/src/results/'
+#path = 'results/reported_results/'
+path = 'results/init234_mu005/'
 # example_file = 'coeff_PD_b0.03c0.01_g4_i1_m0.1_mr50_numneighs4_pairallneighs_avg.txt'
+#prefixes = ['coeff', 'inStratCounts', 'indivStratCounts', 'outStratCounts', 'results', 'tagCounts', 'alive', 'diff_games_']
 prefixes = ['coeff', 'inStratCounts', 'indivStratCounts', 'outStratCounts', 'results', 'tagCounts', 'alive', 'diff_games']
 path_prefix = [path+i for i in prefixes]
 beginning_str = '_PD_b0.03c0.01_g4_i1_m'
-ending_str = '_mr50_numneighs4_pairallneighs_'
+ending_str = '_mr50_numneighs4_init4_pairallneighs_'
 
 for type in range(len(prefixes)):
 	output_file_name = path_prefix[type] + beginning_str + ending_str + "allm.txt"
 	f_out = open(output_file_name, "wb")
 	first_file = 1
-	for mp_i in s.mp:
-		if 0.01 <= mp_i <= 0.1:
-			total_generations = 30000
-		else:
-			total_generations = 20000
+	for mp_i in mp:
+		#if 0.01 <= mp_i <= 0.1:
+		#	total_generations = 30000
+		#else:
+		#	total_generations = 20000
 		input_file_name = path_prefix[type] + beginning_str + str(mp_i) + ending_str + "avg.txt"
 		f_in = open(input_file_name, "rb")
 		row_count = 0

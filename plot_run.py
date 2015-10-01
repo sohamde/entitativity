@@ -5,27 +5,83 @@ Author: Soham De
 
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 
 # for mobility settings
-total_generations = 20000
+total_generations = 30000
 
 # input file to plot
-mobility_prob = 0.0
+mobility_prob = float(sys.argv[2])
 actual_mobility_prob = mobility_prob
-file_to_plot = 'results/ind_vs_ent_results_new/results_PD_b0.03c0.01_g4_i1_m'+str(mobility_prob)+'_mr50_numneighs4_pairallneighs_avg.txt'
+
+init = 2
+
+graph_opt = int(sys.argv[1])
+if graph_opt == 1:
+	# plot of group-entitative agents vs individual-entitative agents
+	columns_to_ignore = [0,1,2,3]+(range(6,15))
+	custom_legend = ['Group-Entitative Agents', 'Individual-Entitative Agents']
+	file_name = 'results'
+elif graph_opt == 2:
+	# plot of percentage of cooperators, in-group defectors and out-group defectors
+	columns_to_ignore = list(set(range(15)) - {0,1,2})
+	custom_legend = ['In-Group Defection', 'Out-Group Defection', 'Cooperative Actions']
+	file_name = 'results'
+elif graph_opt == 3:
+	# percentage of different types of in-group strategies for group-entitative agents
+	columns_to_ignore = []
+	custom_legend = ['AllC', 'TFT', 'OTFT', 'AllD']
+	file_name = 'inStratCounts'
+elif graph_opt == 4:
+	# percentage of different types of out-group strategies for group-entitative agents
+	columns_to_ignore = []
+	custom_legend = ['AllC', 'TFT', 'OTFT', 'AllD']
+	file_name = 'outStratCounts'
+elif graph_opt == 5:
+	# percentage of different types of strategies for individual-entitative agents
+	columns_to_ignore = []
+	custom_legend = ['AllC', 'TFT', 'OTFT', 'AllD']
+	file_name = 'indivStratCounts'
+elif graph_opt == 6:
+	# clustering coefficient
+	columns_to_ignore = []
+	custom_legend = ['Clustering Coefficient']
+	file_name = 'coeff'
+elif graph_opt == 7:
+	# number of cooperations (x) vs number of defections (1 - x)
+	columns_to_ignore = list(set(range(15)) - {2}) # the other one is 1 - x
+	custom_legend = ['Cooperative Actions', 'Defections']
+	file_name = 'results'
+elif graph_opt == 8:
+	# number of cooperations (x) vs number of defections (1 - x)
+	columns_to_ignore = [1]
+	custom_legend = ['Unique Opponents', 'Games With Same Opponent']
+	file_name = 'diff_games'
+elif graph_opt == 9:
+	# proportion of agents alive
+	columns_to_ignore = []
+	custom_legend = ['Alive Proportion']
+	file_name = 'alive'
+else:
+	# specify columns_to_ignore and custom_legend manually
+	columns_to_ignore = [0,1,2,3]+(range(6,15))
+	custom_legend = ['Group-Entitative Agents', 'Individual-Entitative Agents']
+	file_name = 'results'
+
+file_to_plot = 'results/init234_mu005/'+file_name+'_PD_b0.03c0.01_g4_i1_m'+str(mobility_prob)+'_mr50_numneighs4_init'+str(init)+'_pairallneighs_avg.txt'
 #file_to_plot = 'results/only_ent_results/tagCounts_PD_b0.03c0.01_g4_i1_m0.0_mr50_numneighs4_pairallneighs_avg.txt'
 f_in = open(file_to_plot, "rb")
 
 # specify which columns to not plot
 #columns_to_ignore = [0,1,3]+(range(6,15))
-columns_to_ignore = [0,1,2,3]+(range(6,15))
+#columns_to_ignore = [0,1,2,3]+(range(6,15))
 #columns_to_ignore = [1]
 #columns_to_ignore = [0,2]
 #columns_to_ignore = []
 #columns_to_ignore = list(set(range(15)) - {0,1,2})
 
 #custom_legend = ['Cooperative Actions', 'Group-Entitative Agents', 'Individualistic Agents']
-custom_legend = ['Group-Entitative Agents', 'Individual-Entitative Agents']
+#custom_legend = ['Group-Entitative Agents', 'Individual-Entitative Agents']
 #custom_legend = ['Unique Opponents', 'Games With Same Opponent']
 #custom_legend = ['clustering coefficient']
 #custom_legend = ['Always Cooperate', 'Tit-for-Tat', 'Opp of Tit-for-Tat', 'Always Defect']
