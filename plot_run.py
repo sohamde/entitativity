@@ -105,8 +105,9 @@ for r in f_in:
 	idx += 1
 y_values = map(list, zip(*y_values))
 
-#y_values[0] = [1-x for x in y_values[0]]
-#y_values[1] = [1-x for x in y_values[1]]
+if graph_opt == 7:
+	y_values.append([1-x for x in y_values[0]])
+
 
 for i in range(len(y_values)):
 	temp_list = list(y_values[i])
@@ -115,7 +116,7 @@ for i in range(len(y_values)):
 plt.xlim(0., total_generations)
 plt.xlabel('Time').set_size(18)
 plt.ylabel('Population %').set_size(18)
-if 'diff_games' not in file_to_plot:
+if graph_opt != 8:
 	plt.yticks(np.arange(0,1.1,0.1))
 plt.tick_params(axis='both', which='major', labelsize=14)
 
