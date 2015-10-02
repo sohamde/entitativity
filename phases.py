@@ -283,7 +283,7 @@ def reproduction_fermi(agents, grid, counts):
 	rnd.shuffle(agents)
 	agentsAdded = list()
 	for agent in agents:
-		# give agent chance (ptr) to clone into a random open adjacent spot, if it exists
+		# adjacent nodes
 		adjacent = list(grid.reproductionneighborLocs[agent.gridlocation])
 
 		# copy a neighbor with some probability specified by the fermi rule
@@ -293,7 +293,7 @@ def reproduction_fermi(agents, grid, counts):
 			agent_ptr = normalizePtr(agent.ptr, g.minPosPay, g.maxPosPay)
 			teacher_ptr = normalizePtr(teacher.ptr, g.minPosPay, g.maxPosPay)
 			difference = teacher_ptr - agent_ptr
-			s = 1.0
+			s = 5.0
 			p = 1.0/(1 + math.exp(-s*difference))
 			if rnd.random() <= p:
 				if g.keepGroupsEqual:
@@ -322,6 +322,7 @@ def mobility_switch_positions(agents, grid):
 	mobility phase: each agent with some probability switches positions with a randomly chosen agent in the grid
 	"""
 
+	rnd.shuffle(agents)
 	if g.mobility:
 		for agent in agents:
 			if rnd.random() < g.mobility:
