@@ -299,6 +299,7 @@ def reproduction_fermi(agents, grid, counts):
 				if g.keepGroupsEqual:
 					if counts[teacher.tag] < g.maxGroupSize:
 						newAgent = teacher.clone(g.tags, g.mu)
+						agents.remove(agent)
 						grid.remove_agent(agent)
 						grid.place_agent(newAgent, agent.gridlocation)
 						agentsAdded.append(newAgent)
@@ -306,8 +307,10 @@ def reproduction_fermi(agents, grid, counts):
 						g.no_games[newAgent] = 0.0
 				else:
 					newAgent = teacher.clone(g.tags, g.mu)
+					agent_location = agent.gridlocation
+					agents.remove(agent)
 					grid.remove_agent(agent)
-					grid.place_agent(newAgent, agent.gridlocation)
+					grid.place_agent(newAgent, agent_location)
 					agentsAdded.append(newAgent)
 					g.agent_opponents[newAgent] = []
 					g.no_games[newAgent] = 0.0

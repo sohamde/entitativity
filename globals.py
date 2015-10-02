@@ -5,6 +5,7 @@
 
 import sys
 import stats_files as st
+import os
 
 # number of tags (different groups) in environment (4 in Hammond & Axelrod 2006)
 nTags = 4
@@ -74,12 +75,13 @@ normPtr = False             # whether to normalize potential to reproduce
 moveTowardOwn = False       # whether mobility should be towards agents with same group tag
 moveRange = n               # range of mobility
 
-# set path to folder where output files will be saved
-cluster = 1     # 1 if running on DeepThought2 cluster, 0 otherwise and set appropriate results folder path
-if cluster == 0:
-	results_folder = './results/'
-else:
+# set path to folder where output files will be saved; cluster = 1 if running on DeepThought2 cluster, 0 otherwise
+if os.path.isdir("/lustre/sohamde/Entitativity"):
+	cluster = 1
 	results_folder = '/lustre/sohamde/Entitativity/src/results/'
+else:
+	cluster = 0
+	results_folder = './results/'
 
 # variables to calculate different statistics
 cnt_dead = 0.0              # count of the number of agents that have died
