@@ -282,6 +282,7 @@ def reproduction_fermi(agents, grid, counts):
 
 	rnd.shuffle(agents)
 	agentsAdded = list()
+	agentsDeleted = list()
 	for agent in agents:
 		# adjacent nodes
 		adjacent = list(grid.reproductionneighborLocs[agent.gridlocation])
@@ -299,7 +300,7 @@ def reproduction_fermi(agents, grid, counts):
 				if g.keepGroupsEqual:
 					if counts[teacher.tag] < g.maxGroupSize:
 						newAgent = teacher.clone(g.tags, g.mu)
-						agents.remove(agent)
+						agentsDeleted.append(agent)
 						grid.remove_agent(agent)
 						grid.place_agent(newAgent, agent.gridlocation)
 						agentsAdded.append(newAgent)
@@ -308,13 +309,14 @@ def reproduction_fermi(agents, grid, counts):
 				else:
 					newAgent = teacher.clone(g.tags, g.mu)
 					agent_location = agent.gridlocation
-					agents.remove(agent)
+					agentsDeleted.append(agent)
 					grid.remove_agent(agent)
 					grid.place_agent(newAgent, agent_location)
 					agentsAdded.append(newAgent)
 					g.agent_opponents[newAgent] = []
 					g.no_games[newAgent] = 0.0
 
+	agents = list(set(agents)-set(agentsDeleted))
 	agents.extend(agentsAdded)
 
 	return agents, grid, counts
