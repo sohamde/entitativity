@@ -1,7 +1,6 @@
-"""
-Plot values vs mobility
-Author: Soham De
-"""
+## Plot values vs mobility
+## authors: soham de, patrick roos
+## emails: (sohamde, roos) at cs umd edu
 
 import matplotlib.pyplot as plt
 import numpy as np

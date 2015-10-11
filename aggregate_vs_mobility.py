@@ -1,8 +1,7 @@
-"""
-For each avg file, takes last 1000 iterations and averages over each column
-Saves in a file, which contains a row for each mobility value
-Author: Soham De
-"""
+## For each avg file, takes last 1000 iterations and averages over each column
+## Saves in a file, which contains a row for each mobility value
+## authors: soham de, patrick roos
+## emails: (sohamde, roos) at cs umd edu
 
 total_generations = 30000
 average_length = 1.0

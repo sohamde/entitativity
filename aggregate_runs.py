@@ -1,7 +1,6 @@
-"""
-Aggregates different runs in results folder using settings from job_settings.py
-Author: Soham De
-"""
+## Aggregates different runs in results folder using settings defined in mp, runs, network_init
+## authors: soham de, patrick roos
+## emails: (sohamde, roos) at cs umd edu
 
 import os
 
@@ -20,7 +19,6 @@ prefixes = ['coeff', 'inStratCounts', 'indivStratCounts', 'outStratCounts', 'res
 path_prefix = [path+i for i in prefixes]
 beginning_str = '_PD_b0.03c0.01_g4_i1_m'
 ending_str = '_mr50_numneighs4_init'+str(network_init)+'_pairallneighs_'
-#ending_str = '_mr50_numneighs4_pairallneighs_onlyEnt_' #for runs with only group-entitative agents
 
 for mp_i in mp:
 	# Creating run ID
