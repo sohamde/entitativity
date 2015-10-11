@@ -13,9 +13,10 @@ total_generations = 30000
 # input file to plot
 mobility_prob = float(sys.argv[2])
 actual_mobility_prob = mobility_prob
-path_to_results_folder = 'results/init234_mu005/'
-init = 2
-graph_opt = int(sys.argv[1])
+path_to_results_folder = 'results/alternate_model/'
+init = int(sys.argv[3])
+graph_opt = int(sys.argv[4])
+run = str(sys.argv[1])       # 'avg' for average run
 
 if graph_opt == 1:
 	# plot of group-entitative agents vs individual-entitative agents
@@ -78,7 +79,7 @@ else:
 	file_name = 'results'
 	title_str = ''
 
-file_to_plot = path_to_results_folder+file_name+'_PD_b0.03c0.01_g4_i1_m'+str(mobility_prob)+'_mr50_numneighs4_init'+str(init)+'_pairallneighs_avg.txt'
+file_to_plot = path_to_results_folder+file_name+'_PD_b0.03c0.01_g4_i1_m'+str(mobility_prob)+'_mr50_numneighs4_init'+str(init)+'_pairallneighs_'+run+'.txt'
 f_in = open(file_to_plot, "rb")
 
 colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', '0.3']
