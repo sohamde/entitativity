@@ -11,9 +11,9 @@ import sys
 last_x_value = 0.08
 steps = 1
 mp = [x/100.0 for x in range(0, 9)]
-init = 2
+init = int(sys.argv[1])
 path_to_results_folder = 'results/init234_mu005/'
-graph_opt = int(sys.argv[1])
+graph_opt = int(sys.argv[2])
 
 if graph_opt == 1:
 	# plot of group-entitative agents vs individual-entitative agents
