@@ -39,6 +39,43 @@ Each run outputs 8 files in the results folder. This section contains descriptio
 
 ----------------------------------
 
+Typically, each particular setting of mobility probability and graph initialization will be run for multiple runs (say for run numbers from 1 to 100). To average the values over these 100 runs, use the following:
+
+	python aggregate_runs.py
+	
+It will take all the runs of each type of output file, and output an extra results file containing the average of the values at each step. Taking in files like *{file_name}\_{run_number}.txt*, it outputs a single file *{file_name}\_avg.txt* which averages the values over all the different runs.
+
+The total number of runs, range of mobility and graph initialization parameters can be set inside the file. The path to the results folder also has to be set appropriately inside the python file.
+
+----------------------------------
+
+For creating plots to show how different values vary by change in mobility, the average results files (created using *aggregate_runs.py*) need to be aggregated for each value of mobility. This can be done by:
+
+	python aggregate_vs_mobility.py
+
+For each average results file (i.e., files ending with *\*avg.txt*) for a range of mobility specified by *mp* inside the python file, *aggregate_vs_mobility.py* aggregates the last row of each file into a new file, with one entry corresponding to each mobility value. The new results file name is *\*\_m\_\*_allm.txt*, where the average results file for each mobility value were specified by *\*\_m{mobility_probability}\_\*avg.txt*, with *{mobility_probability}* denoting the probability of mobility.
+
+----------------------------------
+
+For plots showing how different values vary by change in mobility, use:
+
+	python plot_vs_mobility.py {graph_initialization} {type_of_plot}
+
+where *{graph_initiliazation}* can take values from 0 to 4 as explained above, and *{type_of_plot}* takes values from 1 to 9 and creates different plots, some of which have been presented in the paper. The type of plots created for each option is explained in *plot_vs_mobility.py*.
+
+For plotting a single simulation run (this could be an average run or a specific run number), use:
+
+	python plot_run.py  {run_number} {mobility_probability} {graph_initialization} {type_of_plot}
+	
+where *{run_number}* can be set to avg if plotting average simulation run, and the rest of the command line arguments are the same as described above. An example of plotting a graph for the proportion of group-entitative vs. individual-entitative agents for mobility probability 0.05 for the average file where the graph is initialized to be empty is:
+
+	python plot_run.py avg 0.05 0 1
+
+
+----------------------------------
+
+Other files
 
 
 
+----------------------------------
