@@ -28,14 +28,14 @@ Thus, an example run, with mobility probability 0.05 and initializing the graph 
 
 Each run outputs 8 files in the results folder. This section contains description of each type of output file. The results folder is specified in *globals.py* using the variable name *results_folder*.
 
-- *alive_\**: proportion of nodes which have agents on them
-- *coeff_\**: clustering coefficient of the grid (calculated as described in the paper)
-- *diff_games_\**: 
-- *inStratCounts_\**:
-- *indivStratCounts_\**:
-- *outStratCounts_\**:
-- *results_\**:
-- *tagCounts_\**:
+- *alive_\**: proportion of nodes which have agents on them.
+- *coeff_\**: clustering coefficient of the grid (calculated as described in the paper).
+- *diff_games_\**: average number of unique agents each agents plays a game against, and average number of games each agent plays against the same agent during its lifetime.
+- *inStratCounts_\**: proportion of group-entitative agents playing C, TFT, OTFT, D against in-group agents.
+- *indivStratCounts_\**: proportion of individual-entitative agents playing C, TFT, OTFT, D against other agents.
+- *outStratCounts_\**: proportion of group-entitative agents playing C, TFT, OTFT, D against out-group agents.
+- *results_\**: the columns which are of interest to us are as follows. *inGrpDefPerc*: proportion of total defections against in-group agents. *outGrpDefPerc*: proportion of total defections against out-group agents. *coopProp*: proportion of total cooperations. *collProp*: proportion of group-entitative agents. *indProp*: proportion of individual-entitative agents.
+- *tagCounts_\**: number of agents of each group-tag.
 
 ----------------------------------
 
