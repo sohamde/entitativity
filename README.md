@@ -39,13 +39,13 @@ Each run outputs 8 files in the results folder. This section contains descriptio
 
 -------------------------------------------------------------------
 
-Typically, each particular setting of mobility probability and graph initialization will be run for multiple runs (say for run numbers from 1 to 100). To average the values over these 100 runs, use the following:
+Typically, each particular setting of mobility probability and graph initialization will be run multiple times (say for run numbers from 1 to 100). To average the values over these 100 runs, use the following:
 
 	python aggregate_runs.py
 	
 It will take all the runs of each type of output file, and output an extra results file containing the average of the values at each step. Taking in files like *{file_name}\_{run_number}.txt*, it outputs a single file *{file_name}\_avg.txt* which averages the values over all the different runs.
 
-The total number of runs, range of mobility and graph initialization parameters can be set inside the file. The path to the results folder also has to be set appropriately inside the python file.
+The total number of runs, range of mobility and graph initialization parameters can be set inside *aggregate_runs.py*. The path to the results folder also has to be set appropriately inside *aggregate_runs.py*.
 
 -------------------------------------------------------------------
 
