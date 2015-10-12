@@ -1,4 +1,9 @@
-## Plot values vs mobility
+## plot values vs mobility. used to plot a file of the type *allm.txt vs mobility.
+##
+## run as: python plot_vs_mobility.py {graph_initialization} {type_of_plot}
+## graph_initialization can take values 0, 1, 2, 3, 4 (more details in globals.py)
+## type_of_plot can be from 1, 2, ..., 9. more details of each type of graph is below.
+##
 ## authors: soham de, patrick roos
 ## emails: (sohamde, roos) at cs umd edu
 
@@ -6,12 +11,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-# for mobility settings
+# highest mobility value
 last_x_value = 0.08
 steps = 1
+
+# list of mobility values
 mp = [x/100.0 for x in range(0, 9)]
+
+# graph initialization
 init = int(sys.argv[1])
+
+# path to results folder
 path_to_results_folder = 'results/init234_mu005/'
+
+# type of plot
 graph_opt = int(sys.argv[2])
 
 if graph_opt == 1:
@@ -20,54 +33,63 @@ if graph_opt == 1:
 	custom_legend = ['Group-Entitative Agents', 'Individual-Entitative Agents']
 	file_name = 'results'
 	title_str = ''
+
 elif graph_opt == 2:
 	# plot of percentage of cooperators, in-group defectors and out-group defectors
 	columns_to_ignore = list(set(range(15)) - {0,1,2})
 	custom_legend = ['In-Group Defection', 'Out-Group Defection', 'Cooperative Actions']
 	file_name = 'results'
 	title_str = ''
+
 elif graph_opt == 3:
 	# percentage of different types of in-group strategies for group-entitative agents
 	columns_to_ignore = []
 	custom_legend = ['AllC', 'TFT', 'OTFT', 'AllD']
 	file_name = 'inStratCounts'
 	title_str = 'Group-Entitative In-Group Strategy Proportions'
+
 elif graph_opt == 4:
 	# percentage of different types of out-group strategies for group-entitative agents
 	columns_to_ignore = []
 	custom_legend = ['AllC', 'TFT', 'OTFT', 'AllD']
 	file_name = 'outStratCounts'
 	title_str = 'Group-Entitative Out-Group Strategy Proportions'
+
 elif graph_opt == 5:
 	# percentage of different types of strategies for individual-entitative agents
 	columns_to_ignore = []
 	custom_legend = ['AllC', 'TFT', 'OTFT', 'AllD']
 	file_name = 'indivStratCounts'
 	title_str = 'Individual-Entitative Strategy Proportions'
+
 elif graph_opt == 6:
 	# clustering coefficient
 	columns_to_ignore = []
 	custom_legend = ['Clustering Coefficient']
 	file_name = 'coeff'
 	title_str = ''
+
 elif graph_opt == 7:
 	# number of cooperations (x) vs number of defections (1 - x)
 	columns_to_ignore = list(set(range(15)) - {2}) # the other one is 1 - x
 	custom_legend = ['Cooperations', 'Defections']
 	file_name = 'results'
 	title_str = ''
+
 elif graph_opt == 8:
 	# number of cooperations (x) vs number of defections (1 - x)
 	columns_to_ignore = [1]
 	custom_legend = ['Unique Opponents', 'Games With Same Opponent']
 	file_name = 'diff_games'
 	title_str = ''
+
 elif graph_opt == 9:
 	# proportion of agents alive
 	columns_to_ignore = []
 	custom_legend = ['Alive Proportion']
 	file_name = 'alive'
 	title_str = ''
+
 else:
 	# specify columns_to_ignore and custom_legend manually
 	columns_to_ignore = [0,1,2,3]+(range(6,15))
@@ -79,13 +101,16 @@ else:
 file_to_plot = path_to_results_folder+file_name+'_PD_b0.03c0.01_g4_i1_m_mr50_numneighs4_init'+str(init)+'_pairallneighs_allm.txt'
 f_in = open(file_to_plot, "rb")
 
+# colors and linestyle of plots
 colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', '0.3']
 linestyles=['-', '--']
 markers = ['o', 's', '*', 'v', '^', '+', 'x', '>', '<']
 
+# x and y value lists for plots
 x_values = list()
 y_values = list()
 
+# looping over file
 first_row = 1
 idx = 0
 for r in f_in:
@@ -109,6 +134,7 @@ y_values = map(list, zip(*y_values))
 if graph_opt == 7:
 	y_values.append([1-x for x in y_values[0]])
 
+# plotting values
 for i in range(len(y_values)):
 	plt.plot(x_values, y_values[i], linestyle=linestyles[i/len(colors)], marker=markers[0], color=colors[i%len(colors)], linewidth=3.0)
 plt.xlim(0., last_x_value)
