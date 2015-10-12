@@ -2,7 +2,7 @@ Source code in Python for running simulations of model showing the effect of mob
 
 This README goes through the functionalities of each file in the source code. The code has been tested with Python version 2.7.8. It requires the NumPy package and the matplotlib library.
 
-==================================
+----------------------------------
 
 To run the main simulation, use:
 
@@ -24,7 +24,7 @@ Thus, an example run, with mobility probability 0.05 and initializing the graph 
 
 	python main.py 1 0.05 0
 
-==================================
+----------------------------------
 
 Each run outputs 8 files in the results folder. This section contains description of each type of output file. The results folder is specified in *globals.py* using the variable name *results_folder*.
 
@@ -39,10 +39,6 @@ Each run outputs 8 files in the results folder. This section contains descriptio
 
 ----------------------------------
 
-
-==================================
-==================================
-==================================
 
 
 
