@@ -1,4 +1,4 @@
-Source code in Python for running simulations of model showing the effect of mobility on group-entitative and individual-entitative behavior.
+Source code in Python for running simulations of model showing the effect of mobility on group-entitative and individual-entitative behavior. For the original paper published in Nature Scientific Reports, please see [here](http://www.nature.com/articles/srep17963).
 
 This README goes through the functionalities of each file in the source code. The code has been tested with Python version 2.7.8. It requires the NumPy package and the matplotlib library.
 
