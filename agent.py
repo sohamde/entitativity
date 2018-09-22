@@ -81,6 +81,7 @@ class EntAgent:
 	def clone(self, tags, mu):
 		""" mutation phase (same as specified in Hammond & Axelrod 2006) """
 
+		"""
 		newTag = self.tag
 		if rnd.random() < mu:
 			newTag = rnd.choice(tags)
@@ -112,6 +113,13 @@ class EntAgent:
 			newOutI = self.outI
 		
 		return EntAgent(newTag, newInP, newInQ, newInI, newOutP, newOutQ, newOutI)	
+		"""
+
+		if rnd.random() < mu:
+			return spawnRandomAgent(tags, False)
+		else:
+			return EntAgent(self.tag, self.inP, self.inQ, self.inI, self.outP, self.outQ, self.outI)
+
 
 	def record(self, game):
 		"""Records the game played to history (games_played) and update memory."""
@@ -177,6 +185,7 @@ class IndAgent:
 	def clone(self, tags, mu):
 		""" mutation phase (same as specified in Hammond & Axelrod 2006) """
 
+		"""
 		newTag = self.tag
 		if rnd.random() < mu:
 			newTag = rnd.choice(tags)
@@ -195,6 +204,13 @@ class IndAgent:
 			newI = self.i
 		
 		return IndAgent(newTag, newP, newQ, newI)	
+		"""
+
+		if rnd.random() < mu:
+			return spawnRandomAgent(tags, False)
+		else:
+			return IndAgent(self.tag, self.p, self.q, self.i)
+
 
 	def record(self, game):
 		"""Records the game played to history (games_played) and update memory."""
